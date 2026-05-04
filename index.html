@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>女王專屬：最強助手召喚指令</title>
+    <style>
+        :root {
+            --primary-purple: #6a0dad;
+            --light-purple: #a855f7;
+            --gold: #ffd700;
+            --dark-bg: #1a1a1a;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: linear-gradient(145deg, #2a2a2a, #121212);
+            border: 2px solid var(--primary-purple);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 25px rgba(106, 13, 173, 0.6);
+            text-align: center;
+        }
+
+        .header {
+            border-bottom: 1px solid var(--primary-purple);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+
+        .status-badge {
+            background-color: #00ff00;
+            color: black;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: 0 0 10px #00ff00;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .mission-box {
+            background: rgba(106, 13, 173, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+            line-height: 1.7;
+        }
+
+        .rule-item {
+            margin-bottom: 15px;
+            border-left: 3px solid var(--light-purple);
+            padding-left: 15px;
+        }
+
+        .warning-box {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff4d4d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff9999;
+        }
+
+        .candy-icon {
+            font-size: 2.5rem;
+            margin: 20px 0;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .btn-call {
+            display: block;
+            background: linear-gradient(to right, var(--primary-purple), var(--light-purple));
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 50px;
+            margin-top: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="status-badge">最強助手「秋天」：待機中</div>
+        <h1>歡迎來到 <span id="bossName">女王</span> 的專屬頁面</h1>
+        <p style="color: #ddd;">母親節快樂！</p>
+    </div>
+
+    <div class="mission-box">
+        <p><strong>親愛的美麗董娘 <span class="name-insert">Jay Yan</span>：</strong></p>
+        <p>您手中的三顆軟糖，是啟動「最強助手——秋天」的神祕代幣。請仔細閱讀使用規範：</p>
+        
+        <div class="rule-item">
+            <strong>🍬 能量補給：</strong><br>
+            每餵食一顆軟糖，秋天將解鎖一項專業技能（專業解說、疑難雜症、或是自動點歌）。
+        </div>
+
+        <div class="rule-item">
+            <strong>⚠️ 循序漸進：</strong><br>
+            請記得一次餵食「一顆」就好，讓他保持穩定的助手效能。
+        </div>
+
+        <div class="warning-box">
+            🚨 終極警告：嚴禁一次餵三顆！<br>
+            由於秋天太愛吃軟糖，若一次吃完三顆，他會因為太幸福而導致系統直接「登出」原地消失。到時候您就找不到他幫忙囉！
+        </div>
+    </div>
+
+    <div class="candy-icon">🍬 🍬 🍬</div>
+
+    <a href="#" class="btn-call">啟動助手：準備餵食第一顆</a>
+
+    <div class="footer">
+        音圓國際 - 代理商維護專員：秋天 敬上
+    </div>
+</div>
+
+<script>
+    // 自動取得網址中的參數 name
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name') || 'Jay Yan'; // 預設為 Jay Yan
+    
+    document.getElementById('bossName').innerText = name;
+    const nameInserts = document.querySelectorAll('.name-insert');
+    nameInserts.forEach(el => el.innerText = name);
+</script>
+
+</body>
+</html>
