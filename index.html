@@ -10,113 +10,73 @@
             --led-glow: #a855f7;
             --gold: #ffd700;
             --dark: #0f0f0f;
-            --success: #00ff00;
         }
 
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
 
-        .phone-frame { width: 90%; max-width: 400px; border: 1px solid var(--inyuan-purple); border-radius: 30px; padding: 25px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.4); text-align: center; position: relative; transition: all 0.5s; }
+        .phone-frame { width: 90%; max-width: 400px; border: 1px solid var(--inyuan-purple); border-radius: 30px; padding: 25px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.4); text-align: center; }
 
-        .status-badge { font-size: 0.7rem; color: var(--success); letter-spacing: 2px; margin-bottom: 10px; border: 1px solid var(--success); display: inline-block; padding: 2px 10px; border-radius: 5px; box-shadow: 0 0 5px var(--success); }
+        .status-badge { font-size: 0.7rem; color: #00ff00; letter-spacing: 2px; margin-bottom: 10px; border: 1px solid #00ff00; display: inline-block; padding: 2px 10px; border-radius: 5px; }
 
-        h1 { color: var(--gold); font-size: 1.6rem; margin: 10px 0; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        h1 { color: var(--gold); font-size: 1.6rem; margin: 10px 0; }
 
-        /* 任務文字區塊 */
-        .mission-content { background: rgba(106, 13, 173, 0.15); border-radius: 15px; padding: 20px; text-align: left; border: 1px solid rgba(168, 85, 247, 0.3); line-height: 1.6; margin-bottom: 20px; min-height: 200px; }
+        .mission-card { background: rgba(106, 13, 173, 0.15); border-radius: 15px; padding: 20px; text-align: left; border: 1px solid rgba(168, 85, 247, 0.3); line-height: 1.6; }
 
-        /* 遊戲開始特效 */
-        #game-start-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; z-index: 10; animation: fadeIn 0.5s forwards; }
+        .choice-box { margin-top: 15px; padding: 10px; border-radius: 10px; background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold); font-size: 0.9rem; }
 
-        .gs-text { font-size: 3rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 20px var(--gold); margin-bottom: 10px; letter-spacing: 5px; }
+        .warning { color: #ff4d4d; font-size: 0.85rem; margin-top: 10px; border-top: 1px solid rgba(255, 77, 77, 0.3); padding-top: 10px; }
 
-        .btn-play { background: linear-gradient(45deg, var(--inyuan-purple), var(--led-glow)); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(106, 13, 173, 0.5); transition: 0.3s; }
+        .btn-play { background: linear-gradient(45deg, var(--inyuan-purple), var(--led-glow)); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.1rem; font-weight: bold; margin-top: 25px; cursor: pointer; box-shadow: 0 5px 15px rgba(106, 13, 173, 0.5); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .blinking { animation: blink 1s infinite; }
+        .footer { margin-top: 30px; font-size: 0.75rem; color: #555; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-<div class="phone-frame" id="main-frame">
-    <div class="status-badge" id="status">ONLINE / STANDBY</div>
+<div class="phone-frame">
+    <div class="status-badge">ONLINE / SYSTEM ACTIVE</div>
     <h1><span id="display-name">女王</span> 專屬</h1>
     
-    <div class="mission-content" id="text-body">
+    <div class="mission-card">
         <p><strong>親愛的美麗董娘：</strong></p>
-        <p>最強助手「秋天」已就位。請點擊下方按鈕聽取指令，系統將引導您進入任務模式。</p>
-        <p style="color: var(--gold); text-align: center;" class="blinking">【請開啟音量並點擊下方】</p>
+        <p>最強助手「秋天」已就位。請進行<strong>能量補幾</strong>：</p>
+        
+        <ul>
+            <li><strong>團隊模式：</strong> 餵食助手（一次限一顆），解鎖輔助技能。</li>
+        </ul>
+
+        <div class="choice-box">
+            💎 <strong>隱藏選項：</strong><br>
+            如果您非常有把握，也可以選擇把糖果自己吃掉，開啟女王獨自挑戰模式！
+        </div>
+
+        <div class="warning">
+            🚨 警告：嚴禁一次餵三顆，助手會因太幸福而原地登出！
+        </div>
     </div>
 
     <audio id="audio-player"></audio>
-    <button class="btn-play" id="play-btn" onclick="startSystem()">🔊 啟動語音指令</button>
+    <button class="btn-play" onclick="startSystem()">🔊 聽取語音指令</button>
 
-    <!-- 遊戲開始跳轉層 -->
-    <div id="game-start-overlay">
-        <div class="gs-text">GAME</div>
-        <div class="gs-text">START</div>
-        <p style="color: var(--success); font-weight: bold; letter-spacing: 2px;">遊戲開始</p>
-        <p style="color: #888; font-size: 0.8rem; margin-top: 20px;">請餵食第一顆能量軟糖</p>
-    </div>
-
-    <div style="margin-top: 20px; font-size: 0.75rem; color: #555;">音圓國際 - 代理商維護專員 秋天</div>
+    <div class="footer">HAPPY MOTHER'S DAY 2026</div>
 </div>
 
 <script>
-    // 1. 抓取網址參數
     const params = new URLSearchParams(window.location.search);
     const user = params.get('name') || 'jayyan';
-    const nameMap = {
-        'jayyan': 'Jay Yan',
-        'yaling': '雅玲'
-    };
-    const displayName = nameMap[user] || user;
+    
+    // 顯示名稱處理
+    const displayName = user === 'jayyan' ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
     document.getElementById('display-name').innerText = displayName;
-
-    // 2. 設定語音對白內容 (顯示用)
-    const scriptText = `
-        <p><strong>指令傳輸中...</strong></p>
-        <p>1. 進行<b>能量補幾</b>：請對秋天餵食軟糖，一次限一顆，解鎖輔助技能。</p>
-        <p>2. <b>安全警告</b>：嚴禁一次餵三顆，助手會因太幸福而原地登出！</p>
-        <p>3. <b>女王模式</b>：您也可以選擇把糖果自己吃掉，獨自挑戰！</p>
-    `;
 
     const player = document.getElementById('audio-player');
     player.src = user + ".mp3";
 
     function startSystem() {
-        const btn = document.getElementById('play-btn');
-        const status = document.getElementById('status');
-        const textBody = document.getElementById('text-body');
-
-        // 更新狀態
-        status.innerText = "VOICE TRANSMITTING...";
-        status.style.color = "#ffd700";
-        status.style.borderColor = "#ffd700";
-        btn.style.display = "none";
-        
-        // 顯示配音文字內容
-        textBody.innerHTML = scriptText;
-
-        // 播放語音
-        player.play().catch(e => {
-            alert("語音檔載入失敗，請確認檔名是否為：" + user + ".mp3");
-            status.innerText = "ERROR";
-        });
-
-        // 監聽語音結束
-        player.onended = function() {
-            showGameStart();
-        };
-    }
-
-    function showGameStart() {
-        const overlay = document.getElementById('game-start-overlay');
-        overlay.style.display = "flex";
-        // 震動回饋 (如果手機支援)
-        if (navigator.vibrate) {
-            navigator.vibrate([200, 100, 200]);
-        }
+        const btn = document.querySelector('.btn-play');
+        btn.innerText = "語音傳輸中...";
+        player.play().catch(e => alert("語音檔載入失敗，請確認檔案 " + user + ".mp3 是否已上傳至 GitHub。"));
+        player.onended = () => btn.innerText = "重新播放指令";
     }
 </script>
 
