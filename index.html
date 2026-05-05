@@ -3,38 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>女王專屬：維護系統啟動</title>
+    <title>甜蜜使命：系統初始化</title>
     <style>
         :root { --purp: #6a0dad; --led: #a855f7; --gold: #ffd700; --bg: #0f0f0f; }
         body { background: var(--bg); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .frame { width: 100%; max-width: 400px; border: 1px solid var(--purp); border-radius: 30px; padding: 30px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.4); text-align: center; }
+        .frame { width: 100%; max-width: 420px; border: 1px solid var(--purp); border-radius: 30px; padding: 30px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.4); text-align: center; }
+        
+        /* 個人頭像或圖示區域 */
+        .profile-area { margin-bottom: 20px; }
+        .avatar { width: 80px; height: 80px; background: var(--purp); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 2px solid var(--gold); box-shadow: 0 0 15px var(--led); }
+        
+        .role-title { color: var(--led); font-size: 0.8rem; letter-spacing: 2px; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
+        h1 { color: #fff; font-size: 1.8rem; margin: 10px 0; }
         h1 span { color: var(--gold); }
-        .intro { background: rgba(106, 13, 173, 0.1); border-radius: 15px; padding: 20px; text-align: left; line-height: 1.7; border: 1px solid rgba(168, 85, 247, 0.2); margin-bottom: 25px; }
-        .btn-team { display: block; background: linear-gradient(45deg, var(--purp), var(--led)); color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; cursor: pointer; text-decoration: none; box-shadow: 0 4px 15px rgba(106, 13, 173, 0.6); }
-        .footer { margin-top: 30px; font-size: 0.7rem; color: #555; }
+
+        .intro-content { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; text-align: left; line-height: 1.8; border: 1px solid rgba(168, 85, 247, 0.2); margin-bottom: 25px; }
+        .intro-content p { margin: 0 0 15px 0; font-size: 0.95rem; }
+        .mission-list { color: var(--gold); font-size: 0.9rem; list-style: none; padding: 0; }
+        .mission-list li { margin-bottom: 8px; display: flex; align-items: center; }
+        .mission-list li::before { content: "✔"; margin-right: 10px; color: #00ff00; }
+
+        .btn-start { display: block; background: linear-gradient(45deg, var(--purp), var(--led)); color: white; border: none; padding: 20px; border-radius: 50px; font-weight: bold; font-size: 1.2rem; cursor: pointer; text-decoration: none; box-shadow: 0 4px 15px rgba(106, 13, 173, 0.6); transition: 0.3s; }
+        .btn-start:hover { transform: scale(1.05); filter: brightness(1.1); }
+        
+        .footer { margin-top: 30px; font-size: 0.7rem; color: #666; }
     </style>
 </head>
 <body>
 <div class="frame">
-    <h1>歡迎美麗的 <span id="vip-name">女王</span></h1>
-    <div class="intro">
-        最親愛的董娘，母親節快樂！<br>「女王專屬維護系統」準備就緒。<br><br>
-        偵測到能量缺口，請先進行<b>能量授權</b>：
+    <div class="profile-area">
+        <div class="avatar">👨‍🔧</div>
+        <div class="role-title">音圓國際 代理商維護專員</div>
+        <h1>我是 <span>秋天 (Autumn)</span></h1>
     </div>
-    <a href="#" class="btn-team" onclick="startApp()">🛡️ 餵食第一顆軟糖：啟動助手</a>
-    <div class="footer">音圓國際 代理商維護專員 秋天</div>
+    
+    <div class="intro-content">
+        <p>最敬愛的董娘，母親節快樂！</p>
+        <p>我是您的專屬守護助手秋天。為了感謝您長年對音圓的支持與照顧，我特別設計了這套<b>「甜蜜使命挑戰系統」</b>。接下來我們將經歷：</p>
+        <ul class="mission-list">
+            <li>第一關：女王專屬 MV 歌詞考驗</li>
+            <li>第二關：音圓旗艦機型時光機</li>
+            <li>第三關：終極連線維護 PK 戰</li>
+        </ul>
+        <p style="margin-bottom:0; color:var(--led);">※ 注意：系統運作需要消耗大量「軟糖能量」，請確認能量代幣已就緒！</p>
+    </div>
+
+    <a href="#" class="btn-start" onclick="initiateSystem()">🛡️ 餵食軟糖：啟動系統</a>
+    
+    <div class="footer">Happy Mother's Day 2026</div>
 </div>
-<audio id="audio" autoplay></audio>
+
+<!-- 自動播放語音 -->
+<audio id="bg-voice" autoplay></audio>
+
 <script>
     const ps = new URLSearchParams(window.location.search);
-    const u = ps.get('name') || 'JAY_YAN';
-    const aud = document.getElementById('audio');
-    aud.src = (u === 'JAY_YAN') ? 'jayyan.mp3' : '雅玲.mp3';
-    document.getElementById('vip-name').innerText = (u === 'JAY_YAN') ? 'Jay Yan' : (u === '雅玲' ? '雅玲' : u);
+    const user = ps.get('name') || 'JAY_YAN';
+    
+    // 設定播放對應語音
+    const audio = document.getElementById('bg-voice');
+    audio.src = (user === 'JAY_YAN') ? 'jayyan.mp3' : '雅玲.mp3';
+    audio.play().catch(e => console.log("等待使用者互動以播放語音"));
 
-    function startApp() {
-        alert("🍬 已偵測能量！\n請將【第一顆軟糖】餵食給助手秋天。\n\n餵食完成後按確定，進入第一關。");
-        window.location.href = `Yuki1.html?name=${u}`;
+    function initiateSystem() {
+        alert(`🍬 系統掃描中...\n\n我是秋天，請女王餵食【第一顆軟糖】以啟動任務！\n\n(餵食後請按一下確定進入第一關)`);
+        window.location.href = `Yuki1.html?name=${user}&mode=team`;
     }
 </script>
 </body>
