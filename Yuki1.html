@@ -46,16 +46,14 @@
 
 <div class="header">
     <h1><span id="name-label">女王</span> 專屬任務</h1>
-    <div class="sub-text" id="status-msg">系統待機中...</div>
+    <div class="sub-text" id="status-msg">第一階段：能量注入</div>
 </div>
 
 <div id="start-box">
     <h2 style="color:var(--gold); margin-top:0;">女王，要不要餵食啊？</h2>
-    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">請交付第一顆能量代幣，啟動系統語音指令。</p>
-    <button class="btn-main" onclick="initiate()">🔥 即刻補幾，啟動指令</button>
+    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">請交付第一顆能量代幣，啟動專屬獻禮。</p>
+    <button class="btn-main" onclick="initiate()">🔥 即刻補幾</button>
 </div>
-
-<audio id="audio-player"></audio>
 
 <div id="video-section">
     <div style="padding:12px; text-align:center; font-size:0.85rem; color:var(--gold);">
@@ -82,57 +80,29 @@
 <script>
     const correctLyric = "你不懂女生"; 
 
+    // 抓取網址後面的名字參數
     const params = new URLSearchParams(window.location.search);
     const user = params.get('name') || 'jayyan';
-    const label = (user === 'jayyan') ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
+    const label = (user === 'jayyan') ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : '女王');
     document.getElementById('name-label').innerText = label;
-
-    const audio = document.getElementById('audio-player');
-    audio.src = user + ".mp3";
 
     const video = document.getElementById('mv-video');
 
     function initiate() {
+        // 隱藏餵食按鈕，直接顯示影片區
         document.getElementById('start-box').style.display = 'none';
-        document.getElementById('status-msg').innerText = "系統指令傳輸中...";
-        audio.play().catch(() => showMV());
-        audio.onended = showMV;
+        showMV();
     }
 
     function showMV() {
         document.getElementById('status-msg').innerText = "請欣賞專屬獻禮";
         document.getElementById('video-section').style.display = 'block';
         document.getElementById('video-section').scrollIntoView({behavior: 'smooth'});
-    }
-
-    video.onended = function() {
-        document.getElementById('quiz-box').style.display = 'block';
-        document.getElementById('quiz-box').scrollIntoView({behavior: 'smooth'});
-    };
-
-    function checkAnswer() {
-        const userInput = document.getElementById('user-answer').value.trim();
-        const successBox = document.getElementById('success-box');
         
-        const cleanUser = userInput.replace(/\s+/g, '');
-        const cleanCorrect = correctLyric.replace(/\s+/g, '');
-
-        if (cleanUser === cleanCorrect) {
-            successBox.style.display = 'block';
-            document.getElementById('user-answer').disabled = true;
-            document.querySelector('.btn-submit').disabled = true;
-            successBox.scrollIntoView({behavior: 'smooth'});
-
-            // 重點修正：3秒後自動跳轉到 Yuki2.html
-            setTimeout(() => {
-                window.location.href = "Yuki2.html?name=" + user;
-            }, 3000); 
-
-        } else {
-            alert("歌詞好像不對喔，再回想一下影片！");
-        }
+        // 嘗試自動播放影片
+        video.play().catch(e => console.log("自動播放被阻擋，請手動點擊播放"));
     }
-</script>
 
-</body>
-</html>
+    // 影片結束後，自動彈出答題框
+    video.onended = function() {
+        document.getElementById('quiz-
