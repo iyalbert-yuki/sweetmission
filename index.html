@@ -10,170 +10,56 @@
             --led-glow: #a855f7;
             --gold: #ffd700;
             --dark: #121212;
-            --success-green: #00ff00;
         }
 
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; text-align: center; }
 
-        .header { text-align: center; margin-bottom: 20px; width: 100%; max-width: 400px; }
-        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
-        h1 { color: var(--gold); font-size: 1.5rem; margin: 5px 0; }
-        .sub-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
+        .phone-frame { width: 100%; max-width: 400px; padding: 30px; border: 1px solid var(--inyuan-purple); border-radius: 25px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.5); }
 
-        /* 即刻餵食確認區 (開場立即跳出) */
-        #feeding-check-section { width: 100%; max-width: 400px; background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; box-sizing: border-box; text-align: center; margin-bottom: 20px; animation: popIn 0.5s ease; }
-        #feeding-check-section h2 { color: var(--gold); margin-top: 0; font-size: 1.3rem; }
-        .btn-feed { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 15px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4); }
+        h1 { color: var(--gold); font-size: 1.6rem; margin-bottom: 5px; }
+        .sub-text { color: #aaa; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.6; }
 
-        /* 影片播放區 (預設隱藏，餵食後聽完語音自動顯示) */
-        .video-container { display: none; width: 100%; max-width: 400px; border: 2px solid var(--gold); border-radius: 15px; overflow: hidden; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); background: #000; margin-bottom: 20px; }
-        video { width: 100%; display: block; }
-
-        /* 猜歌詞考驗區 (預設隱藏，影片播完後顯示) */
-        .quiz-container { display: none; width: 100%; max-width: 400px; background: rgba(106, 13, 173, 0.2); border: 1px solid var(--led-glow); border-radius: 15px; padding: 20px; box-sizing: border-box; text-align: center; }
-        
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .quiz-question { font-size: 1.1rem; color: var(--gold); margin-bottom: 15px; font-weight: bold; }
-        
-        .btn-option { display: block; width: 100%; background: #2a2a2a; border: 1px solid #555; color: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn-option:hover { background: var(--inyuan-purple); border-color: var(--led-glow); }
-        .btn-option.correct { background: #00aa00; border-color: #00ff00; }
-        .btn-option.wrong { background: #aa0000; border-color: #ff0000; }
-
-        /* 過關提示區 */
-        .success-message { display: none; margin-top: 15px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid var(--success-green); border-radius: 10px; color: var(--success-green); }
-        .success-message span { color: var(--gold); font-weight: bold; font-size: 1.1rem; }
-
-        .footer { margin-top: 30px; font-size: 0.75rem; color: #555; }
+        .btn-voice { width: 100%; background: linear-gradient(45deg, var(--inyuan-purple), var(--led-glow)); border: none; color: white; padding: 18px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4); transition: 0.3s; }
+        .btn-voice:disabled { background: #555; box-shadow: none; cursor: default; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="level-badge">LEVEL 1</div>
+<div class="phone-frame">
+    <div style="font-size: 0.8rem; color: var(--led-glow); font-weight: bold;">MISSION START</div>
     <h1><span id="display-name">女王</span> 的專屬指令</h1>
-    <div class="sub-text">系統啟動中... 正在偵測能量代幣。</div>
-</div>
-
-<!-- 【即刻餵食確認區】：開場立即顯示 -->
-<div id="feeding-check-section">
-    <h2>女王，要不要餵食啊？</h2>
-    <p style="color: #ccc; font-size: 0.9rem; margin-bottom: 15px;">請拿出您的<span>第一顆能量軟糖</span>交給助手，以啟動系統指令與母親節專屬獻禮！</p>
-    <button class="btn-feed" onclick="startDigitalFlow()">🔥 是的，即刻能量補幾！</button>
-</div>
-
-<!-- 音訊播放器 (jayyan.mp3 等，預設隱藏) -->
-<audio id="voice-player"></audio>
-
-<!-- 影片播放區 -->
-<div class="video-container" id="video-section">
-    <div style="padding: 10px; text-align: center; color: var(--gold); font-size: 0.9rem;">
-        這首充滿力量的女生的歌，送給偉大的您。<br>請欣賞 MV，並注意聽歌詞喔！
-    </div>
-    <video id="mv-player" controls playsinline>
-        <source src="Yuki%20girl.MP4" type="video/mp4">
-        您的瀏覽器不支援影片播放。
-    </video>
-</div>
-
-<!-- 猜歌詞考驗區 -->
-<div class="quiz-container" id="quiz-box">
-    <div class="quiz-question">🎤 記憶大考驗：唱完囉，請問接下來的正確歌詞是？</div>
+    <p class="sub-text">母親節快樂！最強助手已就位，<br>請點擊下方按鈕聽取語音指令，<br>以啟動甜蜜任務獻禮！</p>
     
-    <!-- ******************************************************* -->
-    <!-- 【重要】請在此處修改您的歌詞選項文字 -->
-    <!-- ******************************************************* -->
-    <button class="btn-option" onclick="checkAnswer(this, false)">A. 這裡是錯誤的歌詞選項一</button>
-    <button class="btn-option" onclick="checkAnswer(this, true)">B. 這裡是正確的歌詞 (這個選項會過關)</button>
-    <button class="btn-option" onclick="checkAnswer(this, false)">C. 這裡是錯誤的歌詞選項二</button>
-
-    <div class="success-message" id="success-box">
-        🎉 答對了！女王神記憶！<br><br>
-        恭喜您成功突破第一關卡！<br>
-        請準備好接受<span>下一關</span>的挑戰。
-    </div>
+    <!-- 播放 AI 語音按鈕 (搭配 jayyan.mp3 等) -->
+    <button class="btn-voice" id="btn-voice" onclick="playVoiceCommand()">🔊 點擊聽取系統指令</button>
+    <audio id="voice-player"></audio>
 </div>
-
-<div class="footer">HAPPY MOTHER'S DAY 2026</div>
 
 <script>
-    // 自動抓取網址參數 (例如 ?name=jayyan)
     const params = new URLSearchParams(window.location.search);
     const user = params.get('name') || 'jayyan';
-    
-    // 顯示名稱替換
     const displayName = user === 'jayyan' ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
     document.getElementById('display-name').innerText = displayName;
 
-    // 取得語音播放器並設定對應的 MP3 (jayyan.mp3 等)
     const voicePlayer = document.getElementById('voice-player');
-    voicePlayer.src = user + ".mp3";
+    voicePlayer.src = user + ".mp3"; // 自動載入 jayyan.mp3 等
 
-    const feedingSection = document.getElementById('feeding-check-section');
-    const videoSection = document.getElementById('video-section');
-    const mvPlayer = document.getElementById('mv-player');
-    const quizBox = document.getElementById('quiz-box');
-    const successBox = document.getElementById('success-box');
-
-    // 當女王點擊「即刻能量補幾」後的數位流程
-    function startDigitalFlow() {
-        // 1. 隱藏餵食確認視窗
-        feedingSection.style.display = "none";
+    function playVoiceCommand() {
+        const btnVoice = document.getElementById('btn-voice');
+        btnVoice.innerText = "語音傳輸中...";
+        btnVoice.disabled = true;
         
-        // 2. 顯示抬頭文字更新
-        document.querySelector('.sub-text').innerText = "能量已注入！正在傳輸系統語音指令...";
-
-        // 3. 播放 AI 語音指令 (jayyan.mp3 等，裡面包含交代規則)
         voicePlayer.play().catch(e => {
-            alert("語音檔載入失敗，請確認 " + user + ".mp3 是否已上傳至 GitHub 資料夾！");
-            // 失敗時直接顯示影片
-            showVideo();
+            alert("語音檔載入失敗，請確認資料夾內是否有 " + user + ".mp3！");
+            btnVoice.disabled = false;
+            btnVoice.innerText = "🔊 重新聽取指令";
         });
 
-        // 4. 當語音播完時，顯示 MV 影片區塊
+        // 當語音播完時，自動跳轉到第一關遊戲 Yuki1.html
         voicePlayer.onended = function() {
-            showVideo();
+            // 保留名字參數跳轉
+            window.location.href = `Yuki1.html?name=${user}`;
         };
-    }
-
-    // 顯示影片區塊並捲動
-    function showVideo() {
-        document.querySelector('.sub-text').innerText = "女王專屬獻禮載入完成。請欣賞 MV！";
-        videoSection.style.display = "block"; // 顯示影片
-        videoSection.style.animation = "fadeIn 1s ease-in";
-        videoSection.scrollIntoView({ behavior: 'smooth' }); // 自動捲動到影片區
-    }
-
-    // 當影片播放完畢時，自動跳出猜歌詞考驗
-    mvPlayer.addEventListener('ended', function() {
-        quizBox.style.display = 'block';
-        quizBox.style.animation = "fadeIn 0.5s ease-in";
-        quizBox.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    // 檢查猜歌詞答案的邏輯
-    function checkAnswer(button, isCorrect) {
-        // 鎖定所有按鈕
-        const options = document.querySelectorAll('.btn-option');
-        options.forEach(opt => opt.disabled = true);
-
-        if (isCorrect) {
-            button.classList.add('correct');
-            successBox.style.display = 'block'; 
-            successBox.scrollIntoView({ behavior: 'smooth' });
-        } else {
-            button.classList.add('wrong');
-            setTimeout(() => {
-                alert("哎呀！差一點點，再想一下影片裡的歌詞！");
-                // 解除鎖定並重置顏色，讓她重猜
-                options.forEach(opt => {
-                    opt.disabled = false;
-                    opt.classList.remove('wrong');
-                });
-            }, 800);
-        }
     }
 </script>
 
