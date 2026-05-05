@@ -3,126 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>甜蜜任務：第三關</title>
+    <title>最終挑戰：女王記憶殿堂</title>
     <style>
-        :root {
-            --inyuan-purple: #6a0dad;
-            --led-glow: #a855f7;
-            --gold: #ffd700;
-            --dark: #121212;
-            --card-bg: #2a2a2a;
-        }
-
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-
-        .header { text-align: center; margin-bottom: 25px; }
-        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
-        h1 { color: var(--gold); font-size: 1.6rem; margin: 5px 0; }
-        .sub-text { color: #aaa; font-size: 0.95rem; }
-
-        /* 遊戲面板 */
-        .game-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 420px; perspective: 1000px; }
-
-        .card { aspect-ratio: 1 / 1; background-color: transparent; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease-out; }
+        :root { --primary: #6a0dad; --gold: #ffd700; --dark: #121212; }
+        body { background-color: var(--dark); color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 400px; margin-top: 20px; }
+        .card { aspect-ratio: 1/1; background: var(--primary); border-radius: 8px; position: relative; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; border: 1px solid #444; }
         .card.flipped { transform: rotateY(180deg); }
-        .card.matched { transform: rotateY(180deg); opacity: 0.6; pointer-events: none; border-radius: 10px; box-shadow: 0 0 15px var(--gold); }
-
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; justify-content: center; align-items: center; border: 2px solid var(--inyuan-purple); overflow: hidden; background-color: var(--card-bg); }
-        .card-back { background: linear-gradient(135deg, var(--inyuan-purple) 0%, #3a0066 100%); color: var(--gold); font-size: 2rem; font-weight: bold; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .card-front { transform: rotateY(180deg); background-color: #fff; padding: 5px; box-sizing: border-box; }
-        .card-front img { width: 100%; height: 100%; object-fit: contain; }
-
-        /* 恭喜訊息 */
-        .win-message { display: none; margin-top: 30px; text-align: center; background: rgba(106, 13, 173, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--gold); animation: popIn 0.5s ease; }
-        
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        .btn-restart { margin-top: 15px; padding: 12px 25px; background: linear-gradient(to right, var(--inyuan-purple), var(--led-glow)); color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        
-        .footer { margin-top: auto; padding-top: 30px; font-size: 0.75rem; color: #555; }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; overflow: hidden; }
+        .card-back { background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--gold); }
+        .card-front { background: #fff; transform: rotateY(180deg); }
+        .card-front img { width: 100%; height: 100%; object-fit: cover; }
+        #win-message { display: none; text-align: center; margin-top: 30px; animation: fadeIn 1s; }
+        .final-btn { background: var(--gold); color: #000; padding: 15px 30px; border-radius: 50px; font-weight: bold; border: none; font-size: 1.1rem; margin-top: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
+    <h2 style="color:var(--gold); margin-bottom:5px;">最終關：記憶殿堂</h2>
+    <p style="font-size:0.9rem; color:#aaa;">配對所有機型照片，領取最終驚喜。</p>
+    
+    <div class="grid" id="game-grid"></div>
 
-<div class="header">
-    <div class="level-badge">FINAL LEVEL</div>
-    <h1><span id="display-name">女王</span> 的音圓神機記憶</h1>
-    <div class="sub-text">最終挑戰！請翻出兩張相同的音圓機型進行配對。</div>
-</div>
+    <div id="win-message">
+        <h2 style="color:var(--gold);">🎉 任務大成功！</h2>
+        <p>所有的能量已注入完成。<br>請交付【最後一顆能量代幣】給隨從，<br>並領取您的實體驚喜！</p>
+        <p style="font-size: 1.2rem; color: #fff; border-top: 1px solid #444; padding-top: 20px;">祝女王 母親節快樂！</p>
+    </div>
 
-<div class="game-board" id="game-board"></div>
+    <script>
+        const imageFiles = ['N2-138.jpg', 'N2-150.jpg', 'N2-550.jpg', 'N2-800.jpg', 'P268.jpg', 'Party7000.png', 'Star15.jpg', 'Star25.jpg'];
+        let cards = [...imageFiles, ...imageFiles];
+        cards.sort(() => Math.random() - 0.5);
 
-<div class="win-message" id="win-message">
-    <h2 style="color:var(--gold); margin:0 0 10px 0;">🎉 MISSION ACCOMPLISHED 🎉</h2>
-    <p style="margin: 0 0 15px 0;">太厲害了！最終挑戰達成大成功！<br><br>輔助單位秋天的終極功能已完全解鎖。<br>請遞交您手中的<span>最後一顆軟糖能量</span>，<br>領取為您精心準備的終極破關獎勵！</p>
-    <button class="btn-restart" onclick="initGame()">再玩一次挑战</button>
-</div>
+        const grid = document.getElementById('game-grid');
+        let flippedCards = [];
+        let matchedCount = 0;
 
-<div class="footer">HAPPY MOTHER'S DAY 2026</div>
-
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const user = params.get('name') || 'jayyan';
-    const displayName = user === 'jayyan' ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
-    document.getElementById('display-name').innerText = displayName;
-
-    const images = [
-        "N2-138.jpg", "N2-150.jpg", "N2-550.jpg", "N2-800.jpg",
-        "P268.jpg", "Party7000.png", "Star15.jpg", "Star55.png"
-    ];
-
-    let cards = [], firstCard = null, secondCard = null, lockBoard = false, matchedPairs = 0;
-
-    function initGame() {
-        const gameBoard = document.getElementById('game-board');
-        gameBoard.innerHTML = '';
-        document.getElementById('win-message').style.display = 'none';
-        matchedPairs = 0; firstCard = null; secondCard = null; lockBoard = false;
-
-        cards = [...images, ...images].sort(() => 0.5 - Math.random());
-
-        cards.forEach(imgSrc => {
+        cards.forEach((img, index) => {
             const card = document.createElement('div');
-            card.classList.add('card');
-            card.dataset.img = imgSrc;
-            card.innerHTML = `
-                <div class="card-face card-back">?</div>
-                <div class="card-face card-front"><img src="${imgSrc}" alt="音圓機型"></div>
-            `;
-            card.addEventListener('click', flipCard);
-            gameBoard.appendChild(card);
+            card.className = 'card';
+            card.innerHTML = `<div class="card-back">?</div><div class="card-front"><img src="${img}"></div>`;
+            card.dataset.name = img;
+            card.onclick = () => flipCard(card);
+            grid.appendChild(card);
         });
-    }
 
-    function flipCard() {
-        if (lockBoard || this === firstCard) return;
-        this.classList.add('flipped');
-        if (!firstCard) return firstCard = this;
-        secondCard = this;
-        checkForMatch();
-    }
-
-    function checkForMatch() {
-        if (firstCard.dataset.img === secondCard.dataset.img) {
-            firstCard.classList.add('matched');
-            secondCard.classList.add('matched');
-            matchedPairs++;
-            if (matchedPairs === images.length) setTimeout(() => document.getElementById('win-message').style.display = 'block', 500);
-            resetBoard();
-        } else {
-            lockBoard = true;
-            setTimeout(() => {
-                firstCard.classList.remove('flipped');
-                secondCard.classList.remove('flipped');
-                resetBoard();
-            }, 800);
+        function flipCard(card) {
+            if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
+                card.classList.add('flipped');
+                flippedCards.push(card);
+                if (flippedCards.length === 2) checkMatch();
+            }
         }
-    }
 
-    function resetBoard() { [firstCard, secondCard, lockBoard] = [null, null, false]; }
-
-    initGame();
-</script>
-
+        function checkMatch() {
+            const [c1, c2] = flippedCards;
+            if (c1.dataset.name === c2.dataset.name) {
+                matchedCount++;
+                flippedCards = [];
+                if (matchedCount === imageFiles.length) {
+                    setTimeout(() => {
+                        grid.style.display = 'none';
+                        document.getElementById('win-message').style.display = 'block';
+                    }, 500);
+                }
+            } else {
+                setTimeout(() => {
+                    c1.classList.remove('flipped');
+                    c2.classList.remove('flipped');
+                    flippedCards = [];
+                }, 800);
+            }
+        }
+    </script>
 </body>
 </html>
