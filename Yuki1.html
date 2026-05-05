@@ -3,37 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>甜蜜任務：第一關遊戲</title>
+    <title>女王專屬任務</title>
     <style>
         :root {
-            --inyuan-purple: #6a0dad;
-            --led-glow: #a855f7;
+            --primary: #6a0dad;
+            --glow: #a855f7;
             --gold: #ffd700;
             --dark: #121212;
-            --success-green: #00ff00;
         }
 
         body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
 
         .header { text-align: center; margin-bottom: 20px; width: 100%; max-width: 400px; }
-        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
         h1 { color: var(--gold); font-size: 1.5rem; margin: 5px 0; }
-        .sub-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
+        .sub-text { color: #aaa; font-size: 0.9rem; margin-bottom: 15px; }
 
-        /* 影片播放區 */
-        .video-container { width: 100%; max-width: 400px; border: 2px solid var(--gold); border-radius: 15px; overflow: hidden; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); background: #000; margin-bottom: 20px; }
+        /* 第一層：啟動餵食 */
+        #start-box { width: 100%; max-width: 400px; background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 20px; padding: 30px 20px; text-align: center; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        .btn-main { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+
+        /* 第二層：影片區 (隱藏) */
+        #video-section { display: none; width: 100%; max-width: 400px; border: 2px solid var(--primary); border-radius: 15px; overflow: hidden; background: #000; margin-bottom: 20px; }
         video { width: 100%; display: block; }
 
-        /* 純文字考驗區 (預設隱藏) */
-        .quiz-container { display: none; width: 100%; max-width: 400px; background: rgba(0, 0, 0, 0.85); border: 2px solid var(--led-glow); border-radius: 15px; padding: 25px; box-sizing: border-box; text-align: center; animation: popIn 0.5s ease; position: relative; z-index: 10; }
-        
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* 第三層：猜歌詞 (隱藏) */
+        #quiz-box { display: none; width: 100%; max-width: 400px; background: rgba(106, 13, 173, 0.2); border: 1px solid var(--glow); border-radius: 15px; padding: 20px; text-align: center; }
+        .btn-opt { display: block; width: 100%; background: #2a2a2a; border: 1px solid #555; color: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; font-size: 1rem; cursor: pointer; }
+        .btn-opt.right { background: #00aa00; border-color: #00ff00; }
+        .btn-opt.wrong { background: #aa0000; border-color: #ff0000; }
 
-        /* 跑馬燈跑字 */
-        .scrolling-text-container {
-            width: 100%;
-            overflow: hidden;
+        /* 過關訊息 */
+        #success-box { display: none; margin-top: 15px; color: #00ff00; font-weight: bold; line-height: 1.6; }
+
+        .footer { margin-top: auto; padding-top: 30px; font-size: 0.8rem; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1><span id="name-label">女王</span> 專屬任務</h1>
+    <div class="sub-text" id="status-msg">系統待機中...</div>
+</div>
+
+<div id="start-box">
+    <h2 style="color:var(--gold); margin-top:0;">女王，要不要餵食啊？</h2>
+    <p style="font-size: 0.9rem; color: #ccc;">請交付第一顆能量代幣，啟動系統音訊。</p>
+    <button class="btn-main" onclick="initiate()">🔥 即刻補幾，啟動指令</button>
+</div>
+
+<audio id="audio-player"></audio>
+
+<div id="video-section">
+    <div style="padding:10px; text-align:center; font-size:0.85rem; color:var(--gold);">
+        母親節專屬獻禮：這首歌送給最偉大的女性。<br>請留意歌詞內容。
+    </div>
+    <video id="mv-video" controls playsinline>
+        <source src="Yuki%20girl.MP4" type="video/mp4">
+    </video>
+</div>
+
+<div id="quiz-box">
+    <div style="color:var(--gold); font-weight:bold; margin-bottom:15px;">🎤 記憶考驗：接下來的正確歌詞是？</div>
+    
+    <button class="btn-opt" onclick="check(this, false)">A. 選項一 (填入歌詞)</button>
+    <button class="btn-opt" onclick="check(this, true)">B. 選項二 (正確答案)</button>
+    <button class="btn-opt" onclick="check(this, false)">C. 選項三 (填入歌詞)</button>
+
+    <div id="success-box">
+        🎉 答對了！女王神記憶！<br>
+        第一階段任務已達成，能量注入成功。<br>
+        請準備進入下一關卡。
+    </div>
+</div>
+
+<div class="footer">HAPPY MOTHER'S DAY 2026</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('name') || 'jayyan';
+    const label = (user === 'jayyan') ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
+    document.getElementById('name-label').innerText = label;
+
+    const audio = document.getElementById('audio-player');
+    audio.src = user + ".mp3";
+
+    const video = document.getElementById('mv-video');
+
+    function initiate() {
+        document.getElementById('start-box').style.display = 'none';
+        document.getElementById('status-msg').innerText = "指令傳輸中...";
+        
+        audio.play().catch(() => showMV());
+        audio.onended = showMV;
+    }
+
+    function showMV() {
+        document.getElementById('status-msg').innerText = "請欣賞專屬獻禮";
+        document.getElementById('video-section').style.display = 'block';
+        document.getElementById('video-section').scrollIntoView({behavior: 'smooth'});
+    }
+
+    video.onended = function() {
+        document.getElementById('quiz-box').style.display = 'block';
+        document.getElementById('quiz-box').scrollIntoView({behavior: 'smooth'});
+    };
+
+    function check(btn, isRight) {
+        const opts = document.querySelectorAll('.btn-opt');
+        opts.forEach(o => o.disabled = true);
+
+        if (isRight) {
+            btn.classList.add('right');
+            document.getElementById('success-box').style.display = 'block';
+        } else {
+            btn.classList.add('wrong');
+            setTimeout(() => {
+                alert("再想一下歌詞內容喔！");
+                opts.forEach(o => { o.disabled = false; o.classList.remove('wrong'); });
+            }, 800);
+        }
+    }
+</script>
+
+</body>
+</html>
             background: rgba(106, 13, 173, 0.3);
             border-radius: 5px;
             padding: 8px 0;
