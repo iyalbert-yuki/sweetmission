@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>甜蜜任務：第一關</title>
+    <title>甜蜜任務：第二關挑戰 - 音圓金牌演進史</title>
     <style>
         :root {
             --inyuan-purple: #6a0dad;
@@ -11,111 +11,344 @@
             --gold: #ffd700;
             --dark: #121212;
             --success-green: #00ff00;
+            --box-bg: #1a1a1a;
+            --item-bg: #fff; /* 卡片背景變為白色，突顯機器圖片 */
         }
 
         body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
 
-        .header { text-align: center; margin-bottom: 20px; width: 100%; max-width: 400px; }
+        .header { text-align: center; margin-bottom: 25px; width: 100%; max-width: 600px; }
         .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
-        h1 { color: var(--gold); font-size: 1.5rem; margin: 5px 0; }
-        .sub-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
+        h1 { color: var(--gold); font-size: 1.6rem; margin: 5px 0; }
+        .sub-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; }
 
-        /* 影片播放區 */
-        .video-container { width: 100%; max-width: 400px; border: 2px solid var(--gold); border-radius: 15px; overflow: hidden; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); background: #000; margin-bottom: 20px; }
-        video { width: 100%; display: block; }
+        /* 【開場餵食確認區】(跳出式視窗，第2顆糖) */
+        #feeding-prompt-section { width: 100%; max-width: 400px; background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 15px; padding: 25px; box-sizing: border-box; text-align: center; margin-bottom: 20px; animation: popIn 0.5s ease; position: relative; z-index: 100; }
+        #feeding-prompt-section h2 { color: var(--gold); margin-top: 0; font-size: 1.4rem; }
+        .btn-feed { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4); }
 
-        /* 猜歌詞考驗區 (預設隱藏) */
-        .quiz-container { display: none; width: 100%; max-width: 400px; background: rgba(106, 13, 173, 0.2); border: 1px solid var(--led-glow); border-radius: 15px; padding: 20px; box-sizing: border-box; text-align: center; animation: fadeIn 0.5s ease-in; }
-        
+        /* 【遊戲區域】：預設隱藏 */
+        .game-area { display: none; gap: 15px; width: 100%; max-width: 700px; margin-bottom: 30px; animation: fadeIn 1s ease; }
+
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .quiz-question { font-size: 1.1rem; color: var(--gold); margin-bottom: 15px; font-weight: bold; }
+        /* 左側：待分類卡片池 */
+        .item-pool-container { flex: 1; text-align: center; min-width: 0; }
+        .pool-title { color: #aaa; font-size: 0.8rem; margin-bottom: 10px; font-weight: bold; }
         
-        .btn-option { display: block; width: 100%; background: #2a2a2a; border: 1px solid #555; color: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn-option:hover { background: var(--inyuan-purple); border-color: var(--led-glow); }
-        .btn-option.correct { background: #00aa00; border-color: #00ff00; }
-        .btn-option.wrong { background: #aa0000; border-color: #ff0000; }
+        .item-pool { 
+            display: flex; flex-direction: column; gap: 10px; 
+            min-height: 500px; padding: 10px; border-radius: 15px; 
+            border: 1px dashed rgba(168, 85, 247, 0.2);
+            background: rgba(106, 13, 173, 0.05);
+        }
+
+        /* 可拖曳機器卡片本體 */
+        .draggable-item { 
+            background: var(--item-bg); border: 2px solid #333; border-radius: 8px; 
+            padding: 8px; cursor: grab; text-align: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            transition: 0.2s;
+            touch-action: none;
+        }
+        .draggable-item:hover { border-color: var(--gold); }
+        .draggable-item.dragging { opacity: 0.5; cursor: grabbing; transform: scale(1.05); box-shadow: 0 8px 15px rgba(0,0,0,0.7); border-color: var(--led-glow); }
+        
+        /* 卡片內的圖片 (增加高度突顯圖片) */
+        .draggable-item img { width: auto; height: 45px; border-radius: 3px; pointer-events: none; }
+        /* 卡片內的型號文字 (變大點) */
+        .draggable-item .model-name { color: #000; font-size: 0.8rem; font-weight: bold; margin-top: 5px; }
+
+        /* 右側：年代時間軸 */
+        .timeline-container { flex: 1; text-align: center; min-width: 0; }
+        .timeline-title { color: var(--gold); font-size: 1rem; font-weight: bold; margin-bottom: 10px; }
+        
+        .timeline { display: flex; flex-direction: column; gap: 10px; min-height: 500px; padding: 10px; }
+
+        /* 時間軸插槽本體 (7 個插槽，高度變高) */
+        .timeline-slot { 
+            height: 65px; background: var(--box-bg); 
+            border: 2px dashed rgba(255, 215, 0, 0.1); border-radius: 8px; 
+            display: flex; justify-content: center; align-items: center; 
+            position: relative; overflow: hidden; 
+            transition: 0.2s;
+        }
+        
+        .timeline-slot.over { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); }
+        
+        /* 插槽背景提示文字 */
+        .timeline-slot::before { 
+            content: attr(data-label); 
+            position: absolute; font-size: 3rem; color: rgba(255, 215, 0, 0.02); 
+            font-weight: bold; top: -10px; left: -10px; pointer-events: none; 
+        }
+
+        /* 插槽右上角提示 (例如 最舊) */
+        .timeline-slot::after {
+            content: attr(data-hint);
+            position: absolute; font-size: 0.7rem; color: #555; font-weight: bold; top: 3px; right: 8px; pointer-events: none;
+        }
+
+        /* 正確樣式 */
+        .timeline-slot.matched { border-color: var(--success-green); background: rgba(0, 255, 0, 0.05); border-style: solid; }
+        .timeline-slot.matched .draggable-item { cursor: default; border-color: var(--success-green); }
+
+        /* 錯誤樣式 */
+        .timeline-slot.wrong { border-color: #ff0000; background: rgba(255, 0, 0, 0.05); }
 
         /* 過關提示區 */
-        .success-message { display: none; margin-top: 15px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid var(--success-green); border-radius: 10px; color: var(--success-green); }
+        .success-message { display: none; margin-top: 20px; padding: 20px; width: 100%; max-width: 500px; background: rgba(106, 13, 173, 0.2); border: 2px solid var(--gold); border-radius: 15px; text-align: center; animation: fadeIn 0.5s ease-in; }
         .success-message span { color: var(--gold); font-weight: bold; font-size: 1.1rem; }
-        .btn-next { margin-top: 15px; padding: 10px 20px; background: #008800; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; }
+        
+        .btn-next { margin-top: 15px; padding: 12px 25px; background: #008800; color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+        .footer { margin-top: 30px; font-size: 0.7rem; color: #444; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="level-badge">LEVEL 1</div>
-    <h1><span id="display-name">女王</span> 的記憶挑戰</h1>
-    <div class="sub-text">請欣賞專屬 MV，並注意聽歌詞！影片唱完後，將跳出正確歌詞填空。</div>
+    <div class="level-badge">LEVEL 2 CHALLENGE</div>
+    <h1>🎤 音圓金牌演進史大考驗</h1>
+    <p class="sub-text">最強女神神記憶！請憑藉實力與專業，將左側亂序的 7 台代表音圓演進史的機器卡片，拖曳到右側時間軸「正確的年代順序」位置（1最舊 ➔ 7最新）。</p>
 </div>
 
-<div class="video-container">
-    <video id="mv-player" controls playsinline>
-        <source src="Yuki%20girl.MP4" type="video/mp4">
-        您的瀏覽器不支援影片播放。
-    </video>
+<!-- 【即刻餵食確認區】：開場立即顯示 (第2顆糖) -->
+<div id="feeding-prompt-section">
+    <h2>女王，要不要餵食啊？</h2>
+    <p style="color: #ccc; font-size: 0.9rem; margin-bottom: 20px;">請拿出您的<span>【第二顆能量軟糖】</span>交給助手，以啟動神記憶能量，解鎖音圓金牌 7 神機演進史挑戰！</p>
+    <button class="btn-feed" onclick="startLevel2Flow()">🔥 是的，即刻能量補幾 (第2顆)！</button>
 </div>
 
-<!-- 猜歌詞考驗區 -->
-<div class="quiz-container" id="quiz-box">
-    <div class="quiz-question">🎤 記憶考驗：唱完囉，請填入正確歌詞！</div>
+<!-- 【遊戲區域】：預設隱藏 -->
+<div class="game-area" id="game-area">
     
-    <!-- 選項設定：onclick="checkAnswer(this, true)" 為正確答案 -->
-    <button class="btn-option" onclick="checkAnswer(this, false)">A. 這裡是錯誤的歌詞填空一</button>
-    <button class="btn-option" onclick="checkAnswer(this, true)">B. 這裡是正確歌詞填空 (點此答對)</button>
-    <button class="btn-option" onclick="checkAnswer(this, false)">C. 這裡是錯誤的歌詞填空二</button>
+    <!-- 左側：機器池 -->
+    <div class="item-pool-container">
+        <div class="pool-title">音圓金牌機型 (亂序)</div>
+        <div class="item-pool" id="item-pool">
+            <!-- JavaScript 自動生成 -->
+        </div>
+    </div>
 
-    <div class="success-message" id="success-box">
-        🎉 答對了！女王神記憶！<br><br>
-        請拿出您的<span>第一顆軟糖</span>交給助手秋天，<br>
-        以啟動輔助功能並前往下關挑战！<br><br>
-        <!-- 下一關按鈕 (保留名字參數) -->
-        <button class="btn-next" onclick="goToYuki2()">前往第二關挑戰 ➔</button>
+    <!-- 右側：年代時間軸 -->
+    <div class="timeline-container">
+        <div class="timeline-title">演進史順序 (由舊到新)</div>
+        <div class="timeline" id="timeline">
+            <!-- JavaScript 自動生成 -->
+        </div>
     </div>
 </div>
 
-<div class="footer">音圓國際 代理商維護專員 秋天</div>
+<!-- 過關提示區 (預設隱藏) -->
+<div class="success-message" id="success-box">
+    <h2 style="color:var(--gold); margin:0 0 10px 0;">🎉 MISSION ACCOMPLISHED 🎉</h2>
+    <p style="margin: 0 0 15px 0;">代理商董娘名不虛傳！7 神機演進史完全難不倒您！<br><br>最強助手秋天的最後一項「終極驚喜功能」已準備就緒。<br>請遞交您手中<span>【最後一顆軟糖能量】</span>，以啟動終極破關獎勵！</p>
+    <button class="btn-next" onclick="goToYuki3()">前往終極挑戰 ➔</button>
+</div>
+
+<div class="footer">音圓國際 代理商維護專員 秋天 敬上</div>
 
 <script>
+    // 名稱設定 (從網址抓 Jay Yan 或 雅玲)
     const params = new URLSearchParams(window.location.search);
-    const user = params.get('name') || 'jayyan';
+    const user = params.get('name') || '董娘';
     const displayName = user === 'jayyan' ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
-    document.getElementById('display-name').innerText = displayName;
 
-    const mvPlayer = document.getElementById('mv-player');
-    const quizBox = document.getElementById('quiz-box');
+    // *******************************************************
+    // 🔥 【機型標準答案資料設定】：已拿掉 CD-80P，更新為 7 台真照片！
+    // 正確年代順序：Rank 1=最舊, 7=最新。
+    // *******************************************************
+    // 特別注意：前 4 台機器的圖片檔名與副檔名已完全遵守您的設定，並都是 .jpg。
+    // 後 3 台機器 (N2-550, STAR-55, PARTY-7000) 的圖片檔名與大小寫保持不變。
+    const machines = [
+        // 1-4 代：使用您提供的照片的新檔名
+        { id: "1", name: "1.(S-2001 原型)", img: "S2001.jpg", correctRank: 1 }, // 匹配 image_6.png
+        { id: "2", name: "2.銀河 SR-160 (2007)", img: "SR160.jpg", correctRank: 2 }, // 匹配 image_8.png
+        { id: "3", name: "3.頂級 XR-480 (2010)", img: "XR480.jpg", correctRank: 3 }, // 匹配 image_9.png
+        { id: "4", name: "4.NS-100 (2015)", img: "NS100.jpg", correctRank: 4 }, // 匹配 image_10.png
+        
+        // 5-7 代：原本 GitHub 資料夾裡有的圖片
+        { id: "5", name: "5.N2-550 (2019)", img: "N2-550.jpg", correctRank: 5 }, // 匹配 image_11.png
+        { id: "6", name: "6.STAR-55 (2022)", img: "Star55.png", correctRank: 6 }, // 匹配 image_12.png
+        { id: "7", name: "7.PARTY-7000 (2024)", img: "Party7000.png", correctRank: 7 }, // 匹配 image_13.png
+    ];
+
+    const feedingSection = document.getElementById('feeding-prompt-section');
+    const gameArea = document.getElementById('game-area');
+    const itemPool = document.getElementById('item-pool');
+    const timeline = document.getElementById('timeline');
     const successBox = document.getElementById('success-box');
 
-    // 當影片播放完畢時，自動跳出猜歌詞考驗
-    mvPlayer.addEventListener('ended', function() {
-        quizBox.style.display = 'block';
-        quizBox.scrollIntoView({ behavior: 'smooth' });
-    });
+    let draggedItem = null;
+    let matchedCount = 0; // 記錄答對卡片數量
 
-    // 檢查猜歌詞答案
-    function checkAnswer(button, isCorrect) {
-        // 鎖定選項
-        const options = document.querySelectorAll('.btn-option');
-        options.forEach(opt => opt.disabled = true);
+    // 【開場餵食流程啟動】
+    function startLevel2Flow() {
+        // 1. 隱藏餵食提示
+        feedingSection.style.display = "none";
+        // 2. 顯示遊戲區域
+        gameArea.style.display = "flex";
+        gameArea.scrollIntoView({ behavior: 'smooth' });
+        // 3. 初始化 7 神機遊戲
+        initGame7();
+    }
 
-        if (isCorrect) {
-            button.classList.add('correct');
-            successBox.style.display = 'block'; 
-            successBox.scrollIntoView({ behavior: 'smooth' });
+    // 初始化 7 台機型排列遊戲
+    function initGame7() {
+        matchedCount = 0;
+        successBox.style.display = 'none';
+        itemPool.innerHTML = '';
+        timeline.innerHTML = '';
+
+        // 1. 生成 7 個年代時間軸插槽 (1最舊 -> 7最新)
+        for (let i = 1; i <= machines.length; i++) {
+            const slot = document.createElement('div');
+            slot.classList.add('timeline-slot');
+            slot.dataset.label = i; // 插槽上的數字提示 (1, 2, ...)
+            slot.dataset.rank = i; // 插槽的正確 Rank 謎底
+
+            // 插槽右上角文字提示 (舊, 新)
+            if (i === 1) slot.dataset.hint = "最舊";
+            if (i === machines.length) slot.dataset.hint = "最新";
+            
+            // 監聽拖曳事件
+            slot.addEventListener('dragover', dragOver);
+            slot.addEventListener('dragenter', dragEnter);
+            slot.addEventListener('dragleave', dragLeave);
+            slot.addEventListener('drop', dropItem);
+            
+            timeline.appendChild(slot);
+        }
+
+        // 2. 打亂機器卡片順序 (亂序)
+        const shuffledMachines = [...machines].sort(() => 0.5 - Math.random());
+
+        // 3. 生成 7 張待分類機器卡片
+        shuffledMachines.forEach(machine => {
+            const item = document.createElement('div');
+            item.classList.add('draggable-item');
+            item.setAttribute('draggable', 'true');
+            item.id = machine.id;
+            item.dataset.correctRank = machine.correctRank; // 圖片正確年代 Rank (比對用)
+            
+            item.innerHTML = `
+                <img src="${machine.img}" alt="${machine.name}">
+                <div class="model-name">${machine.name}</div>
+            `;
+            
+            // 監聽拖曳事件
+            item.addEventListener('dragstart', dragStart);
+            item.addEventListener('dragend', dragEnd);
+            
+            // 手機端點擊選擇+放置功能 (代替拖曳)
+            item.addEventListener('click', touchSelectItem);
+
+            itemPool.appendChild(item);
+        });
+
+        // 為插槽增加手機端點擊放置功能
+        document.querySelectorAll('.timeline-slot').forEach(slot => {
+            slot.addEventListener('click', touchPlaceItem);
+        });
+    }
+
+    // --- HTML5 Drag and Drop 功能 --- (供電腦使用)
+
+    function dragStart(e) {
+        draggedItem = this;
+        setTimeout(() => this.classList.add('dragging'), 0);
+    }
+
+    function dragEnd(e) {
+        this.classList.remove('dragging');
+    }
+
+    function dragOver(e) {
+        e.preventDefault(); // 必須 preventDefault
+    }
+
+    function dragEnter(e) {
+        e.preventDefault();
+        if (!this.classList.contains('matched')) {
+            this.classList.add('over'); // 拖曳上方發光效果
+        }
+    }
+
+    function dragLeave() {
+        this.classList.remove('over'); // 拿開拖曳上方發光效果
+    }
+
+    // 當卡片被放置時
+    function dropItem(e) {
+        e.preventDefault();
+        this.classList.remove('over'); // 拿開拖曳發光效果
+        
+        // 檢查插槽內是否已經匹配好了
+        if (this.classList.contains('matched')) return;
+
+        processPlacement(this, draggedItem);
+    }
+
+    // --- 手機端點擊選擇+放置功能 --- (代替拖曳)
+
+    let touchDraggedItem = null;
+
+    // 女神點擊卡片選擇
+    function touchSelectItem() {
+        if (this.classList.contains('dragging')) {
+            this.classList.remove('dragging');
+            touchDraggedItem = null;
         } else {
-            button.classList.add('wrong');
+            document.querySelectorAll('.draggable-item').forEach(item => item.classList.remove('dragging'));
+            this.classList.add('dragging');
+            touchDraggedItem = this;
+        }
+    }
+
+    // 女神點擊插槽放置
+    function touchPlaceItem() {
+        if (!touchDraggedItem || this.classList.contains('matched')) return;
+        
+        processPlacement(this, touchDraggedItem);
+        
+        // 放置後清除選擇樣式
+        touchDraggedItem.classList.remove('dragging');
+        touchDraggedItem = null;
+    }
+
+    // 核心處理邏輯: 檢查 Rank (年代) 比對
+    function processPlacement(slot, item) {
+        // 【比對核心】: 卡片的正確年代 Rank 是否與插槽的位置 Rank 一致？
+        if (item.dataset.correctRank == slot.dataset.rank) {
+            // 答對了！
+            matchedCount++;
+            item.remove(); // 機器池移除
+            slot.appendChild(item); // 放置插槽
+            slot.classList.add('matched'); // 插槽綠色發光
+            slot.classList.remove('wrong'); // 移除紅色樣式
+            
+            // 檢查是否全部 7 台完成
+            if (matchedCount === machines.length) {
+                setTimeout(() => {
+                    successBox.style.display = 'block';
+                    successBox.scrollIntoView({ behavior: 'smooth' });
+                }, 400);
+            }
+        } else {
+            // 答錯了！
+            slot.classList.add('wrong'); // 紅色發光
             setTimeout(() => {
-                alert("哎呀！差一點點，再想一下正確的歌詞填空！");
-                // 重置
-                options.forEach(opt => { opt.disabled = false; opt.classList.remove('wrong'); });
+                alert("哎呀！董娘女神差一點點，再想一下這台機器在演進史中的年代位置！如果是最新代 PARTY-7000 或最舊代原型機，都在兩端喔。助手秋天可以給提示喔！");
+                slot.classList.remove('wrong'); // 拿開紅色樣式
             }, 800);
         }
     }
 
-    // 跳轉到下一關的邏輯
-    function goToYuki2() {
-        window.location.href = `Yuki2.html?name=${user}`; // 跳轉至預留的 Yuki2.html
+    // 前往下關挑戰挑战挑战挑战
+    function goToYuki3() {
+        window.location.href = `Yuki3.html?name=${user}`; // 跳轉至 Yuki3.html保留參數
     }
 </script>
 
