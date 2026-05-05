@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最終關卡：機型記憶考驗</title>
+    <style>
+        :root {
+            --inyuan-purple: #6a0dad;
+            --led-glow: #a855f7;
+            --gold: #ffd700;
+            --dark: #121212;
+            --card-bg: #2a2a2a;
+        }
+
+        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+
+        .header { text-align: center; margin-bottom: 25px; }
+        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
+        h1 { color: var(--gold); font-size: 1.6rem; margin: 5px 0; }
+        .sub-text { color: #aaa; font-size: 0.95rem; }
+
+        /* 遊戲面板 */
+        .game-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 420px; perspective: 1000px; }
+
+        .card { aspect-ratio: 1 / 1; background-color: transparent; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease-out; }
+        .card.flipped { transform: rotateY(180deg); }
+        .card.matched { transform: rotateY(180deg); opacity: 0.6; pointer-events: none; border-radius: 10px; box-shadow: 0 0 15px var(--gold); }
+
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; justify-content: center; align-items: center; border: 2px solid var(--inyuan-purple); overflow: hidden; background-color: var(--card-bg); }
+        .card-back { background: linear-gradient(135deg, var(--inyuan-purple) 0%, #3a0066 100%); color: var(--gold); font-size: 2rem; font-weight: bold; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .card-front { transform: rotateY(180deg); background-color: #fff; padding: 5px; box-sizing: border-box; }
+        .card-front img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* 恭喜訊息 */
+        .win-message { display: none; margin-top: 30px; text-align: center; background: rgba(106, 13, 173, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--gold); animation: popIn 0.5s ease; }
+        
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .btn-restart { margin-top: 15px; padding: 12px 25px; background: linear-gradient(to right, var(--inyuan-purple), var(--led-glow)); color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .btn-restart:hover { filter: brightness(1.2); }
+        
+        .footer { margin-top: auto; padding-top: 30px; font-size: 0.75rem; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="level-badge">FINAL LEVEL</div>
+    <h1><span id="display-name">女王</span> 的記憶考驗</h1>
+    <div class="sub-text">請翻出兩張相同的音圓機型進行配對！</div>
+</div>
+
+<div class="game-board" id="game-board"></div>
+
+<div class="win-message" id="win-message">
+    <h2 style="color:var(--gold); margin:0 0 10px 0;">🎉 挑戰大成功！🎉</h2>
+    <p style="margin: 0 0 15px 0;">恭喜您憑藉神記憶完成配對！<br>請向最強助手秋天領取破關獎勵。</p>
+    <button class="btn-restart" onclick="initGame()">再玩一次</button>
+</div>
+
+<div class="footer">音圓國際 代理商維護專員 秋天 敬上</div>
+
+<script>
+    // 顯示名稱設定
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('name') || '董娘';
+    document.getElementById('display-name').innerText = user.replace('_', ' ');
+
+    // 遊戲圖片設定 (確認檔名與 GitHub 上傳的一致)
+    const images = [
+        "N2-138.jpg", "N2-150.jpg", "N2-550.jpg", "N2-800.jpg",
+        "P268.jpg", "Party7000.png", "Star15.jpg", "Star55.png"
+    ];
+
+    let cards = [], firstCard = null, secondCard = null, lockBoard = false, matchedPairs = 0;
+
+    function initGame() {
+        const gameBoard = document.getElementById('game-board');
+        gameBoard.innerHTML = '';
+        document.getElementById('win-message').style.display = 'none';
+        matchedPairs = 0; firstCard = null; secondCard = null; lockBoard = false;
+
+        cards = [...images, ...images].sort(() => 0.5 - Math.random());
+
+        cards.forEach(imgSrc => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.img = imgSrc;
+            card.innerHTML = `
+                <div class="card-face card-back">?</div>
+                <div class="card-face card-front"><img src="${imgSrc}" alt="音圓機型"></div>
+            `;
+            card.addEventListener('click', flipCard);
+            gameBoard.appendChild(card);
+        });
+    }
+
+    function flipCard() {
+        if (lockBoard || this === firstCard) return;
+        this.classList.add('flipped');
+        if (!firstCard) return firstCard = this;
+        secondCard = this;
+        checkForMatch();
+    }
+
+    function checkForMatch() {
+        if (firstCard.dataset.img === secondCard.dataset.img) {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            matchedPairs++;
+            if (matchedPairs === images.length) setTimeout(() => document.getElementById('win-message').style.display = 'block', 500);
+            resetBoard();
+        } else {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 800); // 縮短翻回去的時間，讓遊戲節奏變快
+        }
+    }
+
+    function resetBoard() { [firstCard, secondCard, lockBoard] = [null, null, false]; }
+
+    // 載入時自動啟動遊戲
+    initGame();
+</script>
+
+</body>
+</html>
