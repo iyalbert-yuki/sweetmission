@@ -3,177 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第二關：音圓機型時光機挑戰</title>
+    <title>第二關：時光機排序挑戰</title>
     <style>
-        :root {
-            --inyuan-purple: #6a0dad;
-            --led-glow: #a855f7;
-            --gold: #ffd700;
-            --dark: #121212;
-            --card-bg: #2a2a2a;
-        }
-
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-
-        /* 外框：延續 phone-frame 風格 */
-        .phone-frame { width: 100%; max-width: 420px; border: 1px solid var(--inyuan-purple); border-radius: 25px; padding: 25px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 25px rgba(106, 13, 173, 0.4); text-align: center; }
-
-        .header { text-align: center; margin-bottom: 20px; }
-        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
+        :root { --purp: #6a0dad; --led: #a855f7; --gold: #ffd700; --bg: #121212; --card: #2a2a2a; }
+        body { background: var(--bg); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .frame { width: 100%; max-width: 420px; border: 1px solid var(--purp); border-radius: 25px; padding: 25px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 25px rgba(106, 13, 173, 0.4); text-align: center; }
+        .head { text-align: center; margin-bottom: 20px; }
+        .badge { display: inline-block; background: var(--purp); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led); }
         h1 { color: #fff; font-size: 1.6rem; margin: 5px 0; }
         h1 span { color: var(--gold); }
-        .intro-text { background: rgba(106, 13, 173, 0.15); border-radius: 15px; padding: 20px; text-align: left; line-height: 1.7; border: 1px solid rgba(168, 85, 247, 0.3); margin-bottom: 25px; font-size: 0.9rem; color: #aaa; }
-        .quiz-question { font-size: 1.15rem; color: var(--gold); margin-bottom: 15px; font-weight: bold; }
-
-        /* 區塊標題 */
-        .section-title { font-size: 0.9rem; color: var(--gold); text-align: left; margin-bottom: 10px; border-bottom: 1px solid rgba(255, 215, 0, 0.3); padding-bottom: 5px; }
-
-        /* 洗牌區與排序區的網格 */
+        .intro { background: rgba(106, 13, 173, 0.15); border-radius: 15px; padding: 20px; text-align: left; line-height: 1.7; border: 1px solid rgba(168, 85, 247, 0.3); margin-bottom: 25px; font-size: 0.9rem; color: #aaa; }
+        .q-text { font-size: 1.1rem; color: var(--gold); margin-bottom: 15px; font-weight: bold; }
         .game-zone { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 25px; }
-
-        /* 卡片與插槽共用樣式 */
-        .card, .slot { aspect-ratio: 2.5 / 1; background-color: var(--card-bg); border-radius: 10px; border: 2px solid var(--inyuan-purple); display: flex; flex-direction: column; justify-content: center; align-items: start; padding: 5px 10px; box-sizing: border-box; cursor: pointer; transition: 0.2s; position: relative; }
-        .card:hover, .slot.drag-over { border-color: var(--led-glow); background-color: rgba(168, 85, 247, 0.1); }
-
-        /* 卡片樣式 */
-        .card { cursor: grab; }
+        .card, .slot { aspect-ratio: 2.8 / 1; background-color: var(--card); border-radius: 10px; border: 2px solid var(--purp); display: flex; flex-direction: column; justify-content: center; align-items: start; padding: 5px 10px; box-sizing: border-box; cursor: pointer; transition: 0.2s; position: relative; }
+        .card:hover, .slot.drag-over { border-color: var(--led); background: rgba(168, 85, 247, 0.1); }
+        .card { cursor: grab; user-select: none; }
         .card.dragging { opacity: 0.5; border-style: dashed; }
-        .card-icon { font-size: 1.1rem; color: var(--led-glow); position: absolute; right: 8px; top: 8px; }
-        .card-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
-        .card-year { font-size: 0.8rem; color: #aaa; }
-
-        /* 插槽樣式 */
-        .slot { border-style: dashed; border-color: #555; background-color: rgba(255,255,255,0.02); }
-        .slot-number { font-size: 1.1rem; font-weight: bold; color: var(--gold); position: absolute; right: 10px; top: 10px; }
-        .slot.matched { border-color: #00ff00; border-style: solid; background-color: rgba(0, 255, 0, 0.05); }
-
-        /* 恭喜訊息 */
-        .success-message { display: none; margin-top: 15px; padding: 20px; background: rgba(0, 255, 0, 0.05); border: 1px solid #00ff00; border-radius: 10px; color: #fff; line-height: 1.7; text-align: left; animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .success-message span { color: #00ff00; font-weight: bold; }
-
-        .footer { margin-top: 35px; font-size: 0.75rem; color: #555; letter-spacing: 1px; }
+        .c-icon { font-size: 1rem; color: var(--led); position: absolute; right: 8px; top: 8px; }
+        .c-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
+        .c-y { font-size: 0.8rem; color: #aaa; }
+        .slot { border-style: dashed; border-color: #555; background: rgba(255,255,255,0.02); }
+        .s-num { font-size: 1.1rem; font-weight: bold; color: var(--gold); position: absolute; right: 10px; top: 10px; }
+        .slot.matched { border-color: #00ff00; border-style: solid; background: rgba(0, 255, 0, 0.05); }
+        .win-box { display: none; margin-top: 15px; padding: 20px; background: rgba(0, 255, 0, 0.05); border: 1px solid #00ff00; border-radius: 10px; color: #fff; line-height: 1.7; text-align: left; animation: fadeIn 0.5s ease-in; }
+        .win-box span { color: #00ff00; font-weight: bold; }
+        .btn-next { display: inline-block; background: var(--gold); color: #000; padding: 10px 20px; border: none; border-radius: 50px; font-weight: bold; margin-top: 15px; cursor: pointer; text-decoration: none; }
     </style>
 </head>
 <body>
-
-<div class="phone-frame">
-    <div class="header">
-        <div class="level-badge">LEVEL 2</div>
-        <h1><span id="display-name">女王</span> 的機型時光機</h1>
-        <div class="intro-text">
-            親愛的董娘：謝謝您陪伴音圓這麼多年，感謝您的照顧與支持。接下來，請先深呼吸，讓我們回到 26 年前，沒錯，同時也是徐懷鈺出道的時間唷！
+<div class="frame">
+    <div class="head">
+        <div class="badge">LEVEL 2</div>
+        <h1><span id="vip-name">女王</span> 的機型時光機</h1>
+        <div class="intro">
+            親愛的董娘：謝謝您陪伴音圓這麼多年，感謝您的照顧與支持。接下來，請深呼吸，讓我們回到 26 年前，沒錯，同時也是徐懷鈺出道的年代。
         </div>
-        <div class="quiz-question">🕒 請依序排列音圓機型，從最早到最晚。</div>
+        <div class="q-text">🕒 請依序排列音圓機型，從最早到最晚：</div>
     </div>
-
-    <!-- 機型洗牌區 -->
-    <div class="section-title">機型洗牌區 (Shuffled Models)</div>
+    <!-- 1. 洗牌卡片區 (我已經幫您洗牌了) -->
     <div class="game-zone" id="shuffle-zone">
-        <!-- 8 個卡片 (data-order 存正確順序1-8，卡片文字依圖片洗牌順序) -->
-        <div class="card" draggable="true" id="card-4" data-order="4"><span class="card-icon">🎤</span><span class="card-name">頂級 XR-480</span><span class="card-year">(2010年)</span></div>
-        <div class="card" draggable="true" id="card-3" data-order="3"><span class="card-icon">🎤</span><span class="card-name">銀河系列 SR-160</span><span class="card-year">(2007年)</span></div>
-        <div class="card" draggable="true" id="card-8" data-order="8"><span class="card-icon">🎤</span><span class="card-name">PARTY-7000</span><span class="card-year">(2024年)</span></div>
-        <div class="card" draggable="true" id="card-2" data-order="2"><span class="card-icon">🎤</span><span class="card-name">CD-80P</span></div>
-        <div class="card" draggable="true" id="card-1" data-order="1"><span class="card-icon">🎤</span><span class="card-name">S-2001 原型</span></div>
-        <div class="card" draggable="true" id="card-7" data-order="7"><span class="card-icon">🎤</span><span class="card-name">STAR-55</span><span class="card-year">(2022年)</span></div>
-        <div class="card" draggable="true" id="card-6" data-order="6"><span class="card-icon">🎤</span><span class="card-name">N2-550</span><span class="card-year">(2019年)</span></div>
-        <div class="card" draggable="true" id="card-5" data-order="5"><span class="card-icon">🎤</span><span class="card-name">NS-100</span><span class="card-year">(2015年)</span></div>
+        <div class="card" draggable="true" id="c4" data-o="4"><span class="c-icon">🎤</span><span class="c-name">XR-480</span><span class="c-y">(2010年)</span></div>
+        <div class="card" draggable="true" id="c1" data-o="1"><span class="c-icon">🎤</span><span class="c-name">S-2001 原型</span></div>
+        <div class="card" draggable="true" id="c8" data-o="8"><span class="c-icon">🎤</span><span class="c-name">PARTY-7000</span><span class="c-y">(2024年)</span></div>
+        <div class="card" draggable="true" id="c2" data-o="2"><span class="c-icon">🎤</span><span class="c-name">CD-80P</span></div>
+        <div class="card" draggable="true" id="c5" data-o="5"><span class="c-icon">🎤</span><span class="c-name">NS-100</span><span class="c-y">(2015年)</span></div>
+        <div class="card" draggable="true" id="c7" data-o="7"><span class="c-icon">🎤</span><span class="c-name">STAR-55</span><span class="c-y">(2022年)</span></div>
+        <div class="card" draggable="true" id="c3" data-o="3"><span class="c-icon">🎤</span><span class="c-name">銀河 SR-160</span><span class="c-y">(2007年)</span></div>
+        <div class="card" draggable="true" id="c6" data-o="6"><span class="c-icon">🎤</span><span class="c-name">N2-550</span><span class="c-y">(2019年)</span></div>
     </div>
-
-    <!-- 您的排序 (目標插槽) -->
-    <div class="section-title">您的排序 (Your Sorting Slots)</div>
+    <!-- 2. 排序插槽區 -->
     <div class="game-zone" id="sorting-zone">
-        <!-- 8 個空白插槽 -->
-        <div class="slot" data-slot="1"><span class="slot-number">1</span></div>
-        <div class="slot" data-slot="2"><span class="slot-number">2</span></div>
-        <div class="slot" data-slot="3"><span class="slot-number">3</span></div>
-        <div class="slot" data-slot="4"><span class="slot-number">4</span></div>
-        <div class="slot" data-slot="5"><span class="slot-number">5</span></div>
-        <div class="slot" data-slot="6"><span class="slot-number">6</span></div>
-        <div class="slot" data-slot="7"><span class="slot-number">7</span></div>
-        <div class="slot" data-slot="8"><span class="slot-number">8</span></div>
+        <div class="slot" data-s="1"><span class="s-num">1</span></div>
+        <div class="slot" data-s="2"><span class="s-num">2</span></div>
+        <div class="slot" data-s="3"><span class="s-num">3</span></div>
+        <div class="slot" data-s="4"><span class="s-num">4</span></div>
+        <div class="slot" data-s="5"><span class="s-num">5</span></div>
+        <div class="slot" data-s="6"><span class="s-num">6</span></div>
+        <div class="slot" data-s="7"><span class="s-num">7</span></div>
+        <div class="slot" data-s="8"><span class="s-num">8</span></div>
     </div>
-
-    <div class="success-message" id="success-box">
-        🎉 <span>恭喜女王破關！</span><br><br>
-        太厲害了！完美的將音圓機型依年代排序完成！<br>
-        秋天副官任務圓滿達成，請前往下一關任務地點。
+    <div class="win-box" id="win">
+        🎉 <span>恭喜女王破關！</span><br>
+        順利排序完成！請遞出您的【最後一顆能量軟糖】。將助手注入滿點維護能量，進入最終挑戰。<br>
+        <a href="#" id="l-next" class="btn-next">前往最終關卡</a>
     </div>
-
-    <div class="footer">音圓國際 HAPPY MOTHER'S DAY 2026</div>
 </div>
-
 <script>
-    // 自動抓取網址參數
     const params = new URLSearchParams(window.location.search);
-    const user = params.get('name') || 'jay_yan';
-    const mode = params.get('mode') || 'team'; // 預設團隊模式
-    
-    const nameMap = { 'jay_yan': 'Jay Yan', 'yaling': '雅玲' };
-    document.getElementById('display-name').innerText = nameMap[user] || user.replace('_', ' ');
+    const u = params.get('name') || 'JAY_YAN';
+    const m = params.get('mode') || 'team';
+    document.getElementById('vip-name').innerText = (u === 'JAY_YAN') ? 'Jay Yan' : (u === '雅玲' ? '雅玲' : u);
 
-    const cards = document.querySelectorAll('.card');
-    const slots = document.querySelectorAll('.slot');
-    const successBox = document.getElementById('success-box');
-    let matchedCount = 0;
+    const cs = document.querySelectorAll('.card');
+    const ss = document.querySelectorAll('.slot');
+    let matched = 0;
 
-    // 拖放功能邏輯
-    cards.forEach(card => {
-        card.addEventListener('dragstart', dragStart);
-        card.addEventListener('dragend', dragEnd);
-    });
+    cs.forEach(c => { c.addEventListener('dragstart', function(e) { e.dataTransfer.setData('id', this.id); setTimeout(() => this.classList.add('dragging'), 0); }); c.addEventListener('dragend', function() { this.classList.remove('dragging'); }); });
+    ss.forEach(s => { s.addEventListener('dragover', e => e.preventDefault()); s.addEventListener('dragenter', function(e) { e.preventDefault(); this.classList.add('drag-over'); }); s.addEventListener('dragleave', function() { this.classList.remove('drag-over'); }); s.addEventListener('drop', dropCard); });
 
-    slots.forEach(slot => {
-        slot.addEventListener('dragover', dragOver);
-        slot.addEventListener('dragenter', dragEnter);
-        slot.addEventListener('dragleave', dragLeave);
-        slot.addEventListener('drop', dropCard);
-    });
-
-    function dragStart(e) {
-        e.dataTransfer.setData('card-id', this.id);
-        setTimeout(() => this.classList.add('dragging'), 0);
-    }
-
-    function dragEnd() {
-        this.classList.remove('dragging');
-    }
-
-    function dragOver(e) { e.preventDefault(); }
-    function dragEnter(e) { e.preventDefault(); this.classList.add('drag-over'); }
-    function dragLeave() { this.classList.remove('drag-over'); }
-
-    function dropCard(e) {
-        e.preventDefault();
-        this.classList.remove('drag-over');
-        const cardId = e.dataTransfer.getData('card-id');
-        const card = document.getElementById(cardId);
-        
-        const cardOrder = card.dataset.order;
-        const slotOrder = this.dataset.slot;
-
-        // 檢查是否配對成功
-        if (cardOrder === slotOrder) {
-            this.appendChild(card);
-            card.classList.remove('card'); // 拿掉 card class，防止重複拖曳
-            card.setAttribute('draggable', 'false'); // 鎖定卡片
-            this.classList.add('matched'); // 插槽發光
-            matchedCount++;
-            
-            // 勝利檢查
-            if (matchedCount === cards.length) {
-                setTimeout(() => {
-                    successBox.style.display = 'block';
-                    successBox.scrollIntoView({ behavior: 'smooth' });
-                }, 500);
-            }
-        } else {
-            // 如果配對失敗，可以加上紅色閃爍效果 (這裡保持簡單)
-            alert(`哎呀！順序不對喔。\n這是第 ${slotOrder} 個機型嗎？再試一次！`);
-        }
-    }
+    function dropCard(e) { e.preventDefault(); this.classList.remove('drag-over'); const cid = e.dataTransfer.getData('id'); const c = document.getElementById(cid); if (c.dataset.o === this.dataset.s) { this.appendChild(c); c.setAttribute('draggable', 'false'); this.classList.add('matched'); matched++; if (matched === cs.length) { setTimeout(() => { alert(`🍬 檢測到代幣能量！\n請將【最後一顆能量軟糖】餵食給秋天。\n\n餵食完成後，按「確定」以解鎖最終關卡！`); document.getElementById('l-next').href = `Yuki3.html?name=${u}&mode=${m}`; document.getElementById('win').style.display = 'block'; document.getElementById('win').scrollIntoView({ behavior: 'smooth' }); }, 500); } } else { alert("噢！時間線好像錯了，再試一次！"); } }
 </script>
-
 </body>
 </html>
