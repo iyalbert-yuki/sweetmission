@@ -3,65 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>甜蜜任務：女王專屬指令</title>
+    <title>女王專屬任務：系統啟動</title>
     <style>
-        :root {
-            --inyuan-purple: #6a0dad;
-            --led-glow: #a855f7;
-            --gold: #ffd700;
-            --dark: #121212;
-        }
-
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; text-align: center; }
-
-        .phone-frame { width: 100%; max-width: 400px; padding: 30px; border: 1px solid var(--inyuan-purple); border-radius: 25px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.5); }
-
-        h1 { color: var(--gold); font-size: 1.6rem; margin-bottom: 5px; }
-        .sub-text { color: #aaa; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.6; }
-
-        .btn-voice { width: 100%; background: linear-gradient(45deg, var(--inyuan-purple), var(--led-glow)); border: none; color: white; padding: 18px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4); transition: 0.3s; }
-        .btn-voice:disabled { background: #555; box-shadow: none; cursor: default; }
+        :root { --gold: #ffd700; --dark: #121212; }
+        body { background-color: var(--dark); color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .start-btn { padding: 20px 50px; background: linear-gradient(45deg, #ff0000, #ff7700); color: white; border: none; border-radius: 50px; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px rgba(255,0,0,0.4); }
+        #status { margin-top: 20px; color: var(--gold); font-size: 1rem; }
     </style>
 </head>
 <body>
 
-<div class="phone-frame">
-    <div style="font-size: 0.8rem; color: var(--led-glow); font-weight: bold;">MISSION START</div>
-    <h1><span id="display-name">女王</span> 的專屬指令</h1>
-    <p class="sub-text">母親節快樂！最強助手已就位，<br>請點擊下方按鈕聽取語音指令，<br>以啟動甜蜜任務獻禮！</p>
-    
-    <!-- 播放 AI 語音按鈕 (搭配 jayyan.mp3 等) -->
-    <button class="btn-voice" id="btn-voice" onclick="playVoiceCommand()">🔊 點擊聽取系統指令</button>
-    <audio id="voice-player"></audio>
-</div>
+    <button class="start-btn" onclick="startSystem()">🔥 啟動系統</button>
+    <div id="status">等待指令中...</div>
 
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const user = params.get('name') || 'jayyan';
-    const displayName = user === 'jayyan' ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
-    document.getElementById('display-name').innerText = displayName;
+    <audio id="intro-audio"></audio>
 
-    const voicePlayer = document.getElementById('voice-player');
-    voicePlayer.src = user + ".mp3"; // 自動載入 jayyan.mp3 等
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const user = params.get('name') || 'jayyan';
+        const audio = document.getElementById('intro-audio');
+        const status = document.getElementById('status');
 
-    function playVoiceCommand() {
-        const btnVoice = document.getElementById('btn-voice');
-        btnVoice.innerText = "語音傳輸中...";
-        btnVoice.disabled = true;
-        
-        voicePlayer.play().catch(e => {
-            alert("語音檔載入失敗，請確認資料夾內是否有 " + user + ".mp3！");
-            btnVoice.disabled = false;
-            btnVoice.innerText = "🔊 重新聽取指令";
-        });
+        function startSystem() {
+            document.querySelector('.start-btn').style.display = 'none';
+            status.innerText = "系統語音傳輸中...";
+            
+            // 播放語音 (jayyan.mp3 或 yaling.mp3)
+            audio.src = user + ".mp3";
+            audio.play().catch(goToNext); // 如果音檔失敗，直接跳轉
+            
+            // 語音講完之後，自動帶你去第一關 yuki1.html
+            audio.onended = goToNext;
+        }
 
-        // 當語音播完時，自動跳轉到第一關遊戲 Yuki1.html
-        voicePlayer.onended = function() {
-            // 保留名字參數跳轉
-            window.location.href = `Yuki1.html?name=${user}`;
-        };
-    }
-</script>
-
+        function goToNext() {
+            status.innerText = "正在進入第一關：ut One...";
+            // 務必確認 GitHub 上的檔案名稱是 yuki1.html
+            window.location.href = "yuki1.html?name=" + user;
+        }
+    </script>
 </body>
 </html>
