@@ -30,16 +30,18 @@
             
             // 播放語音 (jayyan.mp3 或 yaling.mp3)
             audio.src = user + ".mp3";
-            audio.play().catch(goToNext); // 如果音檔失敗，直接跳轉
+            audio.play().catch(goToNext); 
             
-            // 語音講完之後，自動帶你去第一關 yuki1.html
+            // 語音結束後觸發跳轉
             audio.onended = goToNext;
         }
 
         function goToNext() {
-            status.innerText = "正在進入第一關：ut One...";
-            // 務必確認 GitHub 上的檔案名稱是 yuki1.html
-            window.location.href = "yuki1.html?name=" + user;
+            status.innerText = "正在進入第一關...";
+            
+            // 🔴 核心修正：跳轉到大寫 Y 的 Yuki1.html
+            // 如果你的檔名中間有空格 (例如 Yuki 1.html)，請改成 "Yuki%201.html?name="
+            window.location.href = "Yuki1.html?name=" + user;
         }
     </script>
 </body>
