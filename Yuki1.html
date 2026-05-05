@@ -24,7 +24,7 @@
         .video-container { width: 100%; max-width: 400px; border: 2px solid var(--gold); border-radius: 15px; overflow: hidden; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); background: #000; margin-bottom: 20px; }
         video { width: 100%; display: block; }
 
-        /* 純文字考驗區 (預設隱藏，影片播完跳出) */
+        /* 純文字考驗區 (預設隱藏) */
         .quiz-container { display: none; width: 100%; max-width: 400px; background: rgba(0, 0, 0, 0.8); border: 2px solid var(--led-glow); border-radius: 15px; padding: 25px; box-sizing: border-box; text-align: center; animation: popIn 0.5s ease; position: relative; z-index: 10; }
         
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -86,6 +86,8 @@
         .success-message { display: none; margin-top: 20px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 2px solid var(--success-green); border-radius: 10px; color: var(--success-green); animation: fadeIn 0.5s ease-in; }
         .success-message span { color: var(--gold); font-weight: bold; font-size: 1.1rem; }
         .btn-next { margin-top: 15px; padding: 10px 20px; background: #008800; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 3px 6px rgba(0,0,0,0.4); }
+        
+        .footer { margin-top: 30px; font-size: 0.7rem; color: #444; }
     </style>
 </head>
 <body>
@@ -93,23 +95,21 @@
 <div class="header">
     <div class="level-badge">LEVEL 1 CHALLENGE</div>
     <h1>🎤 女神大考驗</h1>
-    <p class="sub-text">母親節快樂！請欣賞專屬 MV，並用心聆聽歌詞。影片停下後，請在下方輸入正確歌詞以開啟甜蜜任務補幾！</p>
+    <p class="sub-text">母親節快樂！請欣賞專屬 MV，影片停下後，請在下方輸入接續的歌詞以開啟甜蜜任務補幾！</p>
 </div>
 
 <div class="video-container">
-    <!-- 影片檔案：Yuki girl.MP4 -->
     <video id="mv-player" controls playsinline>
         <source src="Yuki%20girl.MP4" type="video/mp4">
         您的瀏覽器不支援影片播放。
     </video>
 </div>
 
-<!-- 【純文字考驗區】：預設隱藏，影片播完跳出 -->
+<!-- 【純文字考驗區】 -->
 <div class="quiz-container" id="quiz-box">
     
     <!-- 🏃跑馬燈跑字區域 -->
     <div class="scrolling-text-container">
-        <!-- 女神，他一定知道跟 秋天追了快30年了 -->
         <div class="scrolling-text">
             董娘女神，影片唱到這裡，接下來的歌詞是什麼？您一定知道跟秋天追了快30年了...
         </div>
@@ -127,19 +127,15 @@
         恭喜您成功突破第一關卡！<br>
         請將您的<span>【第一顆軟糖能量】</span>遞交給助手，<br>
         以啟動他的輔助功能！<br><br>
-        <!-- 前往下關挑戰按鈕 (保留名字參數) -->
         <button class="btn-next" onclick="goToYuki2()">前往下一挑戰 ➔</button>
     </div>
 </div>
 
-<div class="footer" style="margin-top: 30px; font-size: 0.7rem; color: #444;">音圓國際 代理商維護專員 秋天</div>
+<div class="footer">音圓國際 代理商維護專員 秋天</div>
 
 <script>
-    // 顯示名稱 (雖然去選項，抬頭還是保留个性化)
     const params = new URLSearchParams(window.location.search);
     const user = params.get('name') || '董娘';
-    
-    // 從 index 跳轉過來的 user 參數會在這裡生效
 
     const mvPlayer = document.getElementById('mv-player');
     const quizBox = document.getElementById('quiz-box');
@@ -148,32 +144,22 @@
     const successBox = document.getElementById('success-box');
 
     // *******************************************************
-    // 🔥 【謎底設定】：請在此處填入您影片唱完後的「正確歌詞」
+    // 🔥 【謎底設定】：已設定為「你不懂女生」
     // *******************************************************
-    // 為了降低輸入難度，比對時會自動轉小寫並去除前後空白
-    const correctAnswer = "您在這裡填入正確歌詞謎底"; 
+    const correctAnswer = "你不懂女生"; 
 
-    // 當影片播放完畢時，自動跳出猜歌詞考驗
     mvPlayer.addEventListener('ended', function() {
-        // 暫停影片播放
         mvPlayer.pause(); 
-        
-        // 顯示純文字填空考驗區
         quizBox.style.display = 'block';
-        quizBox.scrollIntoView({ behavior: 'smooth' }); // 自動捲動到考驗區
-        inputField.focus(); // 自動將焦點放到輸入框
+        quizBox.scrollIntoView({ behavior: 'smooth' }); 
+        inputField.focus(); 
     });
 
-    // 檢查答案的邏輯
     function checkAnswer() {
-        // 取得使用者輸入並進行格式化 (去除前後空白)
         const userAnswer = inputField.value.trim();
-
-        // 鎖定送出按鈕與輸入框
         submitBtn.disabled = true;
         inputField.disabled = true;
 
-        // 如果輸入為空，直接提示並解鎖
         if (!userAnswer) {
             alert("女神，還沒填寫答案喔！");
             submitBtn.disabled = false;
@@ -182,21 +168,17 @@
             return;
         }
 
-        // 進行答案比對 (字串完全匹配，不分大小寫)
-        // 🔥 比對 correctAnswer 謎底
-        if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-            // 答對了！
-            successBox.style.display = 'block'; // 顯示過關與餵食提示
+        // 比對謎底
+        if (userAnswer === correctAnswer) {
+            successBox.style.display = 'block'; 
             successBox.scrollIntoView({ behavior: 'smooth' });
-            submitBtn.style.display = 'none'; // 隱藏送出按鈕
+            submitBtn.style.display = 'none'; 
         } else {
-            // 答錯了！
-            inputField.style.borderColor = "#ff0000"; // 輸入框變紅
+            inputField.style.borderColor = "#ff0000"; 
             inputField.style.boxShadow = "0 0 10px #ff0000";
             
             setTimeout(() => {
                 alert("哎呀！女神差一點點，再想一下影片裡的歌詞謎底！如果您忘了，秋天可以給您提示喔！");
-                // 解除鎖定並重置顏色，讓她重猜
                 inputField.disabled = false;
                 submitBtn.disabled = false;
                 inputField.style.borderColor = "#555";
@@ -206,7 +188,6 @@
         }
     }
 
-    // 當使用者在輸入框按下 Enter 鍵時，視同點擊送出
     inputField.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -214,9 +195,8 @@
         }
     });
 
-    // 跳轉到下一關的邏輯
     function goToYuki2() {
-        window.location.href = `Yuki2.html?name=${user}`; // 跳轉至 Yuki2.html (保留名字參數)
+        window.location.href = `Yuki2.html?name=${user}`; 
     }
 </script>
 
