@@ -105,4 +105,34 @@
 
     // 影片結束後，自動彈出答題框
     video.onended = function() {
-        document.getElementById('quiz-
+        document.getElementById('quiz-box').style.display = 'block';
+        document.getElementById('quiz-box').scrollIntoView({behavior: 'smooth'});
+    };
+
+    function checkAnswer() {
+        const userInput = document.getElementById('user-answer').value.trim();
+        const successBox = document.getElementById('success-box');
+        
+        // 去除空格防呆
+        const cleanUser = userInput.replace(/\s+/g, '');
+        const cleanCorrect = correctLyric.replace(/\s+/g, '');
+
+        if (cleanUser === cleanCorrect) {
+            successBox.style.display = 'block';
+            document.getElementById('user-answer').disabled = true;
+            document.querySelector('.btn-submit').disabled = true;
+            successBox.scrollIntoView({behavior: 'smooth'});
+
+            // 3秒後自動跳轉到第二關 Yuki2.html
+            setTimeout(() => {
+                window.location.href = "Yuki2.html?name=" + user;
+            }, 3000); 
+
+        } else {
+            alert("歌詞好像不對喔，再回想一下影片！");
+        }
+    }
+</script>
+
+</body>
+</html>
