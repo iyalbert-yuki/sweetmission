@@ -73,15 +73,13 @@
 
     <div id="success-box">
         🎉 認證成功！女王神記憶！<br>
-        第一階段任務已圓滿達成。<br>
-        請準備進入下一關卡。
+        第一階段任務已達成，即將進入下一關...
     </div>
 </div>
 
 <div class="footer">HAPPY MOTHER'S DAY 2026</div>
 
 <script>
-    // 正確答案
     const correctLyric = "你不懂女生"; 
 
     const params = new URLSearchParams(window.location.search);
@@ -97,7 +95,6 @@
     function initiate() {
         document.getElementById('start-box').style.display = 'none';
         document.getElementById('status-msg').innerText = "系統指令傳輸中...";
-        
         audio.play().catch(() => showMV());
         audio.onended = showMV;
     }
@@ -125,6 +122,12 @@
             document.getElementById('user-answer').disabled = true;
             document.querySelector('.btn-submit').disabled = true;
             successBox.scrollIntoView({behavior: 'smooth'});
+
+            // --- 核心修正：3秒後自動跳轉到第二關 ---
+            setTimeout(() => {
+                window.location.href = "level2.html?name=" + user;
+            }, 3000); 
+
         } else {
             alert("歌詞好像不對喔，再回想一下！");
         }
