@@ -3,118 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音圓金牌優選：終極系統啟動</title>
+    <title>女王專屬：終極維護系統</title>
     <style>
-        :root {
-            --inyuan-purple: #6a0dad;
-            --led-glow: #a855f7;
-            --gold: #ffd700;
-            --dark: #0f0f0f;
-        }
-
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-
-        .phone-frame { width: 100%; max-width: 400px; border: 1px solid var(--inyuan-purple); border-radius: 30px; padding: 30px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.4); text-align: center; }
-
-        .system-status { font-size: 0.8rem; color: #888; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid rgba(168, 85, 247, 0.2); padding-bottom: 15px; }
-        
-        .status-on { color: #00ff00; font-weight: bold; animation: blink 1.5s infinite; }
+        :root { --purp: #6a0dad; --led: #a855f7; --gold: #ffd700; --bg: #0f0f0f; }
+        body { background: var(--bg); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .frame { width: 100%; max-width: 400px; border: 1px solid var(--purp); border-radius: 30px; padding: 30px; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); box-shadow: 0 0 30px rgba(106, 13, 173, 0.4); text-align: center; }
+        .sys-st { font-size: 0.8rem; color: #888; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid rgba(168, 85, 247, 0.2); padding-bottom: 15px; }
+        .sys-on { color: #00ff00; font-weight: bold; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
         h1 { color: #fff; font-size: 1.6rem; margin: 15px 0; }
         h1 span { color: var(--gold); }
-
-        .intro-text { background: rgba(106, 13, 173, 0.1); border-radius: 15px; padding: 20px; text-align: left; line-height: 1.7; border: 1px solid rgba(168, 85, 247, 0.2); margin-bottom: 25px; }
-
-        .token-count { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-align: center; margin-top: 10px; }
-
-        .choice-container { display: flex; flex-direction: column; gap: 15px; }
-
-        /* 按鈕基本樣式 */
-        .btn-choice { text-decoration: none; display: block; border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; padding: 18px; position: relative; overflow: hidden; }
-
-        /* 團隊模式按鈕：紫色閃耀 */
-        .btn-team { 
-            background: linear-gradient(45deg, var(--inyuan-purple), var(--led-glow)); 
-            color: white; 
-            border: none;
-            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.6);
-        }
-        .btn-team:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(168, 85, 247, 0.8); }
-
-        /* 女王模式按鈕：金色邊框 */
-        .btn-solo { 
-            background: transparent; 
-            color: var(--gold); 
-            border: 2px solid var(--gold); 
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-        .btn-solo:hover { background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
-
+        .intro { background: rgba(106, 13, 173, 0.1); border-radius: 15px; padding: 20px; text-align: left; line-height: 1.7; border: 1px solid rgba(168, 85, 247, 0.2); margin-bottom: 25px; }
+        .tokens { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-align: center; margin: 10px 0; }
+        .choice-list { display: flex; flex-direction: column; gap: 15px; }
+        .btn { text-decoration: none; display: block; border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; padding: 18px; text-align: center; position: relative; overflow: hidden; }
+        .btn-team { background: linear-gradient(45deg, var(--purp), var(--led)); color: white; border: none; box-shadow: 0 4px 15px rgba(106, 13, 173, 0.6); }
+        .btn-team:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-solo { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
+        .btn-solo:hover { background: rgba(255, 215, 0, 0.1); }
         .footer { margin-top: 35px; font-size: 0.75rem; color: #555; letter-spacing: 1px; }
     </style>
 </head>
 <body>
-
-<div class="phone-frame">
-    <div class="system-status">
-        SYSTEM STATUS: <span class="status-on">STANDBY</span> / AUTH REQUIRED
+<div class="frame">
+    <div class="sys-st">SYS STATUS: <span class="sys-on">STANDBY</span> / AUTH REQ</div>
+    <h1>歡迎美麗的 <span id="vip-name">女王</span></h1>
+    <div class="intro">
+        親愛的董娘，母親節快樂！<br>登入「女王專屬維護系統」需檢測裝備。偵測到手中持有：
+        <div class="tokens">🍬 能量代幣 x 3</div>
+        請選擇您的「助手狀態」以解鎖第一關任務：
     </div>
-    
-    <h1>歡迎美麗的 <span id="display-name">女王</span></h1>
-    
-    <div class="intro-text">
-        <p style="margin-top:0;">親愛的董娘，母親節快樂！</p>
-        <p>歡迎登入音圓「母親節專屬維護系統」。偵測到您手中持有：</p>
-        <div class="token-count">🍬 能量代幣 x 3</div>
-        <p style="margin-bottom:0;">在正式開啟挑戰前，請確認您的「助手狀態」：</p>
+    <div class="choice-list">
+        <!-- 團隊模式按鈕：會跳出Alert叫她餵軟糖x1 -->
+        <a href="#" class="btn btn-team" onclick="selectMode('team')">🛡️ 啟動夥伴：秋天 (需代幣x1)</a>
+        <!-- 女王模式：直接進去 -->
+        <a href="#" class="btn btn-solo" onclick="selectMode('solo')">💎 獨自挑戰：女王模式</a>
     </div>
-
-    <div class="choice-container">
-        <!-- 選擇A：團隊模式 -> 遞軟糖 -> 進入第1關 -->
-        <a href="#" class="btn-choice btn-team" onclick="selectMode('team')">
-            🛡️ 啟動夥伴：秋天 (需代幣x1)
-        </a>
-
-        <!-- 選擇B：女王模式 -> 進入第1關 (無協助) -->
-        <a href="#" class="btn-choice btn-solo" onclick="selectMode('solo')">
-            💎 獨自挑戰：女王模式
-        </a>
-    </div>
-
-    <div class="footer">音圓國際 HAPPY MOTHER'S DAY 2026</div>
+    <div class="footer">音圓國際 專業維護 Autumn © 2026</div>
 </div>
-
 <script>
-    // 自動抓取網址的名字
     const params = new URLSearchParams(window.location.search);
-    const user = params.get('name') || 'jay_yan';
-    
-    // 名稱處理邏輯
-    const nameMap = {
-        'jay_yan': 'Jay Yan',
-        'yaling': '雅玲'
-    };
-    document.getElementById('display-name').innerText = nameMap[user] || user.replace('_', ' ');
+    const user = params.get('name') || 'JAY_YAN';
+    const displayName = (user === 'JAY_YAN') ? 'Jay Yan' : (user === '雅玲' ? '雅玲' : user);
+    document.getElementById('vip-name').innerText = displayName;
 
     function selectMode(mode) {
-        // 將選擇的模式也加入網址參數，傳給下一關
-        // 假設第一關的檔案名稱是 level1.html
-        const nextPage = 'level1.html';
-        const finalUrl = `${nextPage}?name=${user}&mode=${mode}`;
-
+        const nextUrl = `Yuki1.html?name=${user}&mode=${mode}`;
         if (mode === 'team') {
-            // 團隊模式：提醒她遞代幣
-            alert(`已掃描代幣！\n請將【第一顆能量軟糖】餵食給秋天。\n\n餵食完成後，按一下「確定」以解鎖第一關！`);
-            window.location.href = finalUrl;
+            // 擬真：代幣互動
+            alert(`🍬 檢測到代幣能量！\n請將【第一顆能量軟糖】餵食給助手秋天。\n\n餵食完成後，按「確定」啟動副官模式並進入第一關！`);
+            window.location.href = nextUrl;
         } else {
-            // 女王模式：直接進入
-            if (confirm(`雅玲/董娘確定要開啟『女王挑戰模式』嗎？\n(將獨立完成任務且獨享三顆軟糖喔！)`)) {
-                window.location.href = finalUrl;
+            if (confirm(`女王英明！確定要獨享三顆軟糖，\n並獨立挑戰第一關嗎？`)) {
+                window.location.href = nextUrl;
             }
         }
     }
 </script>
-
 </body>
 </html>
