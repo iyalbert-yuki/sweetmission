@@ -10,6 +10,7 @@
             --glow: #a855f7;
             --gold: #ffd700;
             --dark: #121212;
+            --success: #00ff00;
         }
 
         body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
@@ -18,22 +19,25 @@
         h1 { color: var(--gold); font-size: 1.5rem; margin: 5px 0; }
         .sub-text { color: #aaa; font-size: 0.9rem; margin-bottom: 15px; }
 
-        /* 第一層：啟動餵食 */
+        /* 1. 啟動區 */
         #start-box { width: 100%; max-width: 400px; background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 20px; padding: 30px 20px; text-align: center; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
         .btn-main { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
 
-        /* 第二層：影片區 (隱藏) */
+        /* 2. 影片區 */
         #video-section { display: none; width: 100%; max-width: 400px; border: 2px solid var(--primary); border-radius: 15px; overflow: hidden; background: #000; margin-bottom: 20px; }
         video { width: 100%; display: block; }
 
-        /* 第三層：猜歌詞 (隱藏) */
-        #quiz-box { display: none; width: 100%; max-width: 400px; background: rgba(106, 13, 173, 0.2); border: 1px solid var(--glow); border-radius: 15px; padding: 20px; text-align: center; }
-        .btn-opt { display: block; width: 100%; background: #2a2a2a; border: 1px solid #555; color: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; font-size: 1rem; cursor: pointer; }
-        .btn-opt.right { background: #00aa00; border-color: #00ff00; }
-        .btn-opt.wrong { background: #aa0000; border-color: #ff0000; }
+        /* 3. 輸入答案區 */
+        #quiz-box { display: none; width: 100%; max-width: 400px; background: rgba(106, 13, 173, 0.2); border: 1px solid var(--glow); border-radius: 15px; padding: 25px 20px; text-align: center; }
+        .input-label { color: var(--gold); font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; display: block; }
+        
+        .answer-input { width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); background: #2a2a2a; color: #fff; font-size: 1.1rem; text-align: center; margin-bottom: 15px; box-sizing: border-box; outline: none; }
+        .answer-input:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
+        
+        .btn-submit { background: var(--primary); border: 1px solid var(--glow); color: white; padding: 12px; width: 100%; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
 
         /* 過關訊息 */
-        #success-box { display: none; margin-top: 15px; color: #00ff00; font-weight: bold; line-height: 1.6; }
+        #success-box { display: none; margin-top: 20px; color: var(--success); font-weight: bold; line-height: 1.6; border: 1px solid var(--success); padding: 15px; border-radius: 10px; background: rgba(0, 255, 0, 0.05); }
 
         .footer { margin-top: auto; padding-top: 30px; font-size: 0.8rem; color: #555; }
     </style>
@@ -47,31 +51,29 @@
 
 <div id="start-box">
     <h2 style="color:var(--gold); margin-top:0;">女王，要不要餵食啊？</h2>
-    <p style="font-size: 0.9rem; color: #ccc;">請交付第一顆能量代幣，啟動系統音訊。</p>
+    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">請交付第一顆能量代幣，啟動系統語音指令。</p>
     <button class="btn-main" onclick="initiate()">🔥 即刻補幾，啟動指令</button>
 </div>
 
 <audio id="audio-player"></audio>
 
 <div id="video-section">
-    <div style="padding:10px; text-align:center; font-size:0.85rem; color:var(--gold);">
-        母親節專屬獻禮：這首歌送給最偉大的女性。<br>請留意歌詞內容。
+    <div style="padding:12px; text-align:center; font-size:0.85rem; color:var(--gold);">
+        母親節專屬獻禮：這首歌送給最偉大的女性。<br>請留意接下來的歌詞內容。
     </div>
     <video id="mv-video" controls playsinline>
-        <source src="Yuki%20girl.MP4" type="video/mp4">
+        <source src="Yuki.mp4" type="video/mp4">
     </video>
 </div>
 
 <div id="quiz-box">
-    <div style="color:var(--gold); font-weight:bold; margin-bottom:15px;">🎤 記憶考驗：接下來的正確歌詞是？</div>
-    
-    <button class="btn-opt" onclick="check(this, false)">A. 選項一 (填入歌詞)</button>
-    <button class="btn-opt" onclick="check(this, true)">B. 選項二 (正確答案)</button>
-    <button class="btn-opt" onclick="check(this, false)">C. 選項三 (填入歌詞)</button>
+    <label class="input-label" for="user-answer">🎤 記憶考驗：請輸入正確的歌詞</label>
+    <input type="text" id="user-answer" class="answer-input" placeholder="請在此輸入文字..." autocomplete="off">
+    <button class="btn-submit" onclick="checkAnswer()">提交答案</button>
 
     <div id="success-box">
-        🎉 答對了！女王神記憶！<br>
-        第一階段任務已達成，能量注入成功。<br>
+        🎉 認證成功！女王神記憶！<br>
+        第一階段任務已圓滿達成。<br>
         請準備進入下一關卡。
     </div>
 </div>
@@ -79,6 +81,11 @@
 <div class="footer">HAPPY MOTHER'S DAY 2026</div>
 
 <script>
+    // ---------------------------------------------------------
+    // 正確答案設定
+    // ---------------------------------------------------------
+    const correctLyric = "你不懂女生"; 
+
     const params = new URLSearchParams(window.location.search);
     const user = params.get('name') || 'jayyan';
     const label = (user === 'jayyan') ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
@@ -91,7 +98,7 @@
 
     function initiate() {
         document.getElementById('start-box').style.display = 'none';
-        document.getElementById('status-msg').innerText = "指令傳輸中...";
+        document.getElementById('status-msg').innerText = "系統指令傳輸中...";
         
         audio.play().catch(() => showMV());
         audio.onended = showMV;
@@ -108,235 +115,21 @@
         document.getElementById('quiz-box').scrollIntoView({behavior: 'smooth'});
     };
 
-    function check(btn, isRight) {
-        const opts = document.querySelectorAll('.btn-opt');
-        opts.forEach(o => o.disabled = true);
+    function checkAnswer() {
+        const userInput = document.getElementById('user-answer').value.trim();
+        const successBox = document.getElementById('success-box');
+        
+        const cleanUser = userInput.replace(/\s+/g, '');
+        const cleanCorrect = correctLyric.replace(/\s+/g, '');
 
-        if (isRight) {
-            btn.classList.add('right');
-            document.getElementById('success-box').style.display = 'block';
+        if (cleanUser === cleanCorrect) {
+            successBox.style.display = 'block';
+            document.getElementById('user-answer').disabled = true;
+            document.querySelector('.btn-submit').disabled = true;
+            successBox.scrollIntoView({behavior: 'smooth'});
         } else {
-            btn.classList.add('wrong');
-            setTimeout(() => {
-                alert("再想一下歌詞內容喔！");
-                opts.forEach(o => { o.disabled = false; o.classList.remove('wrong'); });
-            }, 800);
+            alert("歌詞好像不對喔，再回想一下！");
         }
-    }
-</script>
-
-</body>
-</html>
-            background: rgba(106, 13, 173, 0.3);
-            border-radius: 5px;
-            padding: 8px 0;
-            margin-bottom: 20px;
-            border-top: 1px solid var(--led-glow);
-            border-bottom: 1px solid var(--led-glow);
-        }
-
-        .scrolling-text {
-            white-space: nowrap;
-            display: inline-block;
-            animation: marquee 10s linear infinite;
-            color: var(--gold);
-            font-size: 1rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* 🎤 【空格填空】樣式區域 */
-        .cloze-area { margin-bottom: 25px; text-align: center; font-size: 1.5rem; color: #fff; font-weight: bold; letter-spacing: 2px; }
-        
-        /* 歌詞部分 */
-        .lyric-part { display: inline-block; vertical-align: middle; }
-        
-        /* 答案輸入空格 */
-        .cloze-input { 
-            width: 65px; 
-            background: rgba(255, 255, 255, 0.1); 
-            border: 2px solid var(--gold); 
-            color: var(--gold); 
-            padding: 12px 0; 
-            border-radius: 10px; 
-            font-size: 1.4rem; 
-            text-align: center;
-            letter-spacing: 0;
-            box-sizing: border-box;
-            transition: 0.3s;
-            display: inline-block;
-            vertical-align: middle;
-            margin: 0 5px;
-            font-family: inherit;
-            font-weight: bold;
-        }
-        .cloze-input:focus { outline: none; border-color: var(--led-glow); box-shadow: 0 0 10px var(--led-glow); background: rgba(255,255,255,0.15); }
-        .cloze-input::placeholder { color: rgba(255, 215, 0, 0.2); font-size: 1rem; }
-
-        /* 送出按鈕 */
-        .btn-submit { width: 100%; background: var(--inyuan-purple); border: none; color: white; padding: 15px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.3s; }
-        .btn-submit:hover { filter: brightness(1.2); }
-        .btn-submit:disabled { background: #555; cursor: default; box-shadow: none; }
-
-        /* 過關提示區 */
-        .success-message { display: none; margin-top: 20px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 2px solid var(--success-green); border-radius: 10px; color: var(--success-green); animation: fadeIn 0.5s ease-in; }
-        .success-message span { color: var(--gold); font-weight: bold; font-size: 1.1rem; }
-        .btn-next { margin-top: 15px; padding: 10px 20px; background: #008800; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 3px 6px rgba(0,0,0,0.4); }
-        
-        .footer { margin-top: 30px; font-size: 0.75rem; color: #555; text-align: center; width: 100%; }
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <div class="level-badge">LEVEL 1 CHALLENGE</div>
-    <h1>🎤 女神大考驗</h1>
-    <p class="sub-text">母親節快樂！請欣賞專屬 MV，影片停下後，請依序將<span>接續的歌詞謎底</span>填入空格中！你不懂女生？</p>
-</div>
-
-<div class="video-container">
-    <video id="mv-player" controls playsinline>
-        <source src="Yuki%20girl.MP4" type="video/mp4">
-        您的瀏覽器不支援影片播放。
-    </video>
-</div>
-
-<!-- 【純文字考驗區】：預設隱藏，影片播完跳出 -->
-<div class="quiz-container" id="quiz-box">
-    
-    <!-- 跑馬燈跑字區域 -->
-    <div class="scrolling-text-container">
-        <div class="scrolling-text">
-            董娘女神，考驗默契的時候到了，影片唱到這裡，接下來的歌詞是什麼呢？這題一定考不倒您的...
-        </div>
-    </div>
-
-    <!-- 🎤 【你不懂女生 空格填空】區域 -->
-    <div class="cloze-area">
-        <span class="lyric-part">你</span>
-        <!-- 空格 1 (謎底: 不) -->
-        <input type="text" id="blank1-input" class="cloze-input" maxlength="1" placeholder="謎1" autocomplete="off">
-        <!-- 空格 2 (謎底: 懂) -->
-        <input type="text" id="blank2-input" class="cloze-input" maxlength="1" placeholder="謎2" autocomplete="off">
-        <span class="lyric-part">女生</span>
-    </div>
-    
-    <button class="btn-submit" id="submit-btn" onclick="checkClozeAnswer()">🔊 送出答案</button>
-
-    <div class="success-message" id="success-box">
-        🎉 破關！女神神記憶！🎉<br><br>
-        恭喜您成功突破第一關卡！<br>
-        請將您的<span>【第一顆軟糖能量】</span>遞交給助手秋天，<br>
-        以啟動他的輔助功能！<br><br>
-        <button class="btn-next" onclick="goToYuki2()">前往下一挑戰 ➔</button>
-    </div>
-</div>
-
-<div class="footer">音圓國際 最強助手 秋天 敬上</div>
-
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const user = params.get('name') || '董娘';
-
-    const mvPlayer = document.getElementById('mv-player');
-    const quizBox = document.getElementById('quiz-box');
-    
-    // 空格輸入框
-    const blank1Input = document.getElementById('blank1-input');
-    const blank2Input = document.getElementById('blank2-input');
-    
-    const submitBtn = document.getElementById('submit-btn');
-    const successBox = document.getElementById('success-box');
-
-    // 當影片播放完畢時，自動跳出猜歌詞考驗
-    mvPlayer.addEventListener('ended', function() {
-        mvPlayer.pause(); 
-        quizBox.style.display = 'block';
-        quizBox.scrollIntoView({ behavior: 'smooth' }); 
-        blank1Input.focus(); // 自動聚焦到第一個空格
-    });
-
-    // 檢查「你不懂女生」空格填空答案的邏輯
-    function checkClozeAnswer() {
-        // 取得使用者填寫的兩個字 (去除空格)
-        const blank1 = blank1Input.value.trim();
-        const blank2 = blank2Input.value.trim();
-
-        // 鎖定送出按鈕與輸入框
-        submitBtn.disabled = true;
-        blank1Input.disabled = true;
-        blank2Input.disabled = true;
-
-        // 如果有沒有填寫的空格，提示並解鎖
-        if (!blank1 || !blank2) {
-            alert("女神，還有空格沒填寫喔！謎底是兩個字。");
-            submitBtn.disabled = false;
-            blank1Input.disabled = false;
-            blank2Input.disabled = false;
-            if (!blank1) blank1Input.focus(); else blank2Input.focus();
-            return;
-        }
-
-        // *******************************************************
-        // 🔥 【你不懂女生 謎底設定】：
-        // *******************************************************
-        if (blank1 === "不" && blank2 === "懂") {
-            // 答對了！
-            successBox.style.display = 'block'; 
-            successBox.scrollIntoView({ behavior: 'smooth' });
-            submitBtn.style.display = 'none'; // 隱藏送出按鈕
-        } else {
-            // 答錯了！
-            blank1Input.style.borderColor = "#ff0000"; // 輸入框變紅
-            blank2Input.style.borderColor = "#ff0000";
-            blank1Input.style.boxShadow = "0 0 10px #ff0000";
-            blank2Input.style.boxShadow = "0 0 10px #ff0000";
-            
-            setTimeout(() => {
-                alert("哎呀！女神差一點點，再想一下影片裡的這兩個字！你不懂女生嗎？助手秋天可以給提示喔！");
-                // 解除鎖定並重置顏色，讓她重猜
-                blank1Input.disabled = false;
-                blank2Input.disabled = false;
-                submitBtn.disabled = false;
-                
-                // 重置樣式
-                blank1Input.style.borderColor = var(--gold);
-                blank2Input.style.borderColor = var(--gold);
-                blank1Input.style.boxShadow = "none";
-                blank2Input.style.boxShadow = "none";
-                
-                blank1Input.value = ""; // 清空輸入框
-                blank2Input.value = "";
-                blank1Input.focus();
-            }, 800);
-        }
-    }
-
-    // 當使用者在空格內按下 Enter 鍵時，視同點擊送出
-    [blank1Input, blank2Input].forEach(input => {
-        input.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                submitBtn.click();
-            }
-        });
-    });
-    
-    // **操作優化**：填完第一個字後，自動跳到第二個空格
-    blank1Input.addEventListener('input', function() {
-        if (this.value.trim().length === 1) {
-            blank2Input.focus();
-        }
-    });
-
-    // 跳轉到下一關的邏輯
-    function goToYuki2() {
-        window.location.href = `Yuki2.html?name=${user}`; 
     }
 </script>
 
