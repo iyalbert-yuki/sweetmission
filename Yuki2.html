@@ -1,4 +1,117 @@
-    // --- 請找到 Yuki2.html 腳本中的 checkOrder 函式並替換成這段 ---
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>女王專屬任務 - 第二關</title>
+    <style>
+        :root {
+            --primary: #6a0dad;
+            --glow: #a855f7;
+            --gold: #ffd700;
+            --dark: #121212;
+            --success: #00ff00;
+        }
+
+        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+
+        .header { text-align: center; margin-bottom: 20px; }
+        h1 { color: var(--gold); font-size: 1.5rem; }
+        .instruction { font-size: 0.9rem; color: #ccc; margin-bottom: 20px; text-align: center; line-height: 1.5; }
+        .instruction span { color: var(--gold); font-weight: bold; }
+
+        /* 排序區域 */
+        #sortable-list { width: 100%; max-width: 400px; list-style: none; padding: 0; margin: 0; }
+        .sort-item {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            cursor: grab;
+            transition: 0.2s;
+        }
+        .sort-item:active { cursor: grabbing; transform: scale(1.02); border-color: var(--gold); }
+        .sort-item img { width: 60px; height: 45px; object-fit: cover; border-radius: 5px; margin-right: 15px; background: #000; }
+        .sort-item .model-name { font-weight: bold; font-size: 1rem; color: #eee; }
+        .sort-item .handle { margin-left: auto; color: #555; font-size: 1.2rem; }
+
+        /* 按鈕區 */
+        .btn-check { margin-top: 20px; padding: 15px 40px; background: linear-gradient(to right, var(--primary), var(--glow)); color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.1rem; width: 100%; max-width: 400px; }
+
+        .footer { margin-top: 30px; font-size: 0.8rem; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1><span id="name-label">女王</span> 專屬：時光機挑戰</h1>
+</div>
+
+<div class="instruction">
+    第一階段認證通過。請交付<span>第二顆能量代幣</span>。<br>
+    並將下列經典機型依照<span>「上市時間：由舊到新」</span><br>從上到下重新排列，以啟動最終挑戰。
+</div>
+
+<ul id="sortable-list">
+    <!-- 內容由 JS 隨機生成 -->
+</ul>
+
+<button class="btn-check" onclick="checkOrder()">提交排序</button>
+
+<div class="footer">HAPPY MOTHER'S DAY 2026</div>
+
+<!-- 引入拖曳排序庫 -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script>
+    // 取得網址參數
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('name') || 'queen';
+    
+    // 名稱映射
+    const nameMap = {
+        'jayyan': 'Jay Yan',
+        'yaling': '雅玲'
+    };
+    document.getElementById('name-label').innerText = nameMap[user] || '女王';
+
+    // 正確的機型順序 (由舊到新)
+    const correctOrder = [
+        { id: 'P268', img: 'P268.jpg' },
+        { id: 'Star15', img: 'Star15.jpg' },
+        { id: 'Star25', img: 'Star25.jpg' },
+        { id: 'Party7000', img: 'Party7000.png' },
+        { id: 'N2-150', img: 'N2-150.jpg' },
+        { id: 'N2-138', img: 'N2-138.jpg' },
+        { id: 'N2-550', img: 'N2-550.jpg' },
+        { id: 'N2-800', img: 'N2-800.jpg' }
+    ];
+
+    // 初始化列表 (打亂順序)
+    const listElement = document.getElementById('sortable-list');
+    let shuffled = [...correctOrder].sort(() => Math.random() - 0.5);
+
+    shuffled.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'sort-item';
+        li.dataset.id = item.id;
+        li.innerHTML = `
+            <img src="${item.img}" alt="${item.id}">
+            <span class="model-name">${item.id}</span>
+            <span class="handle">≡</span>
+        `;
+        listElement.appendChild(li);
+    });
+
+    // 啟動拖曳功能
+    const sortable = new Sortable(listElement, {
+        animation: 150,
+        ghostClass: 'blue-background-class'
+    });
+
+    // 檢查順序與跳轉
     function checkOrder() {
         const items = listElement.querySelectorAll('.sort-item');
         let currentOrder = [];
@@ -7,14 +120,15 @@
         const isCorrect = currentOrder.every((val, index) => val === correctOrder[index].id);
 
         if (isCorrect) {
-            // 彈出成功訊息
             alert("女王英明！時光序位完全正確。\n系統即將開啟最終挑戰！");
             
-            // 核心修正：點完 alert 後直接自動跳轉到第三關
-            // 確保檔名對準 Yuki3.html
+            // 成功後自動帶著名字參數跳轉到第三關 Yuki3.html
             window.location.href = "Yuki3.html?name=" + user;
-            
         } else {
             alert("順序好像不太對喔，再回想一下這些經典款的出廠順序！");
         }
     }
+</script>
+
+</body>
+</html>
