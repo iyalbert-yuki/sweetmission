@@ -3,205 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>甜蜜任務：第二關挑戰 - 音圓金牌演進史</title>
+    <title>女王專屬任務：能量同步</title>
     <style>
-        :root {
-            --inyuan-purple: #6a0dad;
-            --led-glow: #a855f7;
-            --gold: #ffd700;
-            --dark: #121212;
-            --success-green: #00ff00;
-            --box-bg: #1a1a1a;
-            --item-bg: #fff;
-        }
-
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-
-        .header { text-align: center; margin-bottom: 25px; width: 100%; max-width: 600px; }
-        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
-        h1 { color: var(--gold); font-size: 1.6rem; margin: 5px 0; }
-        .sub-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; }
-
-        #feeding-prompt-section { width: 100%; max-width: 400px; background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 15px; padding: 25px; box-sizing: border-box; text-align: center; margin-bottom: 20px; animation: popIn 0.5s ease; position: relative; z-index: 100; }
-        #feeding-prompt-section h2 { color: var(--gold); margin-top: 0; font-size: 1.4rem; }
-        .btn-feed { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4); }
-
-        .game-area { display: none; gap: 15px; width: 100%; max-width: 700px; margin-bottom: 30px; animation: fadeIn 1s ease; }
-
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .item-pool-container { flex: 1; text-align: center; min-width: 0; }
-        .pool-title { color: #aaa; font-size: 0.8rem; margin-bottom: 10px; font-weight: bold; }
-        
-        .item-pool { display: flex; flex-direction: column; gap: 10px; min-height: 500px; padding: 10px; border-radius: 15px; border: 1px dashed rgba(168, 85, 247, 0.2); background: rgba(106, 13, 173, 0.05); }
-
-        .draggable-item { background: var(--item-bg); border: 2px solid #333; border-radius: 8px; padding: 8px; cursor: grab; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.2s; touch-action: none; }
-        .draggable-item:hover { border-color: var(--gold); }
-        .draggable-item.dragging { opacity: 0.5; cursor: grabbing; transform: scale(1.05); box-shadow: 0 8px 15px rgba(0,0,0,0.7); border-color: var(--led-glow); }
-        
-        .draggable-item img { width: auto; height: 45px; border-radius: 3px; pointer-events: none; }
-        .draggable-item .model-name { color: #000; font-size: 0.8rem; font-weight: bold; margin-top: 5px; }
-
-        .timeline-container { flex: 1; text-align: center; min-width: 0; }
-        .timeline-title { color: var(--gold); font-size: 1rem; font-weight: bold; margin-bottom: 10px; }
-        
-        .timeline { display: flex; flex-direction: column; gap: 10px; min-height: 500px; padding: 10px; }
-
-        .timeline-slot { height: 65px; background: var(--box-bg); border: 2px dashed rgba(255, 215, 0, 0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; transition: 0.2s; }
-        .timeline-slot.over { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); }
-        .timeline-slot::before { content: attr(data-label); position: absolute; font-size: 3rem; color: rgba(255, 215, 0, 0.02); font-weight: bold; top: -10px; left: -10px; pointer-events: none; }
-        .timeline-slot::after { content: attr(data-hint); position: absolute; font-size: 0.7rem; color: #555; font-weight: bold; top: 3px; right: 8px; pointer-events: none; }
-
-        .timeline-slot.matched { border-color: var(--success-green); background: rgba(0, 255, 0, 0.05); border-style: solid; }
-        .timeline-slot.matched .draggable-item { cursor: default; border-color: var(--success-green); }
-        .timeline-slot.wrong { border-color: #ff0000; background: rgba(255, 0, 0, 0.05); }
-
-        .success-message { display: none; margin-top: 20px; padding: 20px; width: 100%; max-width: 500px; background: rgba(106, 13, 173, 0.2); border: 2px solid var(--gold); border-radius: 15px; text-align: center; animation: fadeIn 0.5s ease-in; }
-        .success-message span { color: var(--gold); font-weight: bold; font-size: 1.1rem; }
-        
-        .btn-next { margin-top: 15px; padding: 12px 25px; background: #008800; color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-
-        .footer { margin-top: 30px; font-size: 0.75rem; color: #555; text-align: center; width: 100%; }
+        :root { --primary: #6a0dad; --glow: #a855f7; --gold: #ffd700; --dark: #121212; }
+        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; justify-content: center; }
+        h1 { color: var(--gold); font-size: 1.6rem; text-align: center; }
+        .instruction-box { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid var(--glow); width: 100%; max-width: 350px; text-align: center; margin-bottom: 20px; }
+        .energy-orb { width: 150px; height: 150px; background: radial-gradient(circle, var(--glow) 0%, var(--primary) 70%, transparent 100%); border-radius: 50%; box-shadow: 0 0 30px var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; user-select: none; -webkit-user-select: none; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+        .btn-next { display: none; margin-top: 25px; padding: 15px 40px; background: linear-gradient(to right, var(--primary), var(--glow)); color: white; border: none; border-radius: 50px; font-weight: bold; text-decoration: none; box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4); }
+        .footer { margin-top: 40px; font-size: 0.8rem; color: #555; }
     </style>
 </head>
 <body>
-
-<div class="header">
-    <div class="level-badge">LEVEL 2 CHALLENGE</div>
-    <h1>🎤 音圓金牌演進史大考驗</h1>
-    <p class="sub-text">最強女神神記憶！請將左側亂序的 7 台機器卡片，拖曳到右側時間軸「正確的年代順序」位置（由舊 ➔ 新）。</p>
-</div>
-
-<div id="feeding-prompt-section">
-    <h2>女王，要不要餵食啊？</h2>
-    <p style="color: #ccc; font-size: 0.9rem; margin-bottom: 20px;">請拿出您的<span>【第二顆能量軟糖】</span>交給助手，以啟動神記憶能量，解鎖音圓金牌 7 神機演進史挑戰！</p>
-    <button class="btn-feed" onclick="startLevel2Flow()">🔥 是的，即刻能量補幾 (第2顆)！</button>
-</div>
-
-<div class="game-area" id="game-area">
-    <div class="item-pool-container">
-        <div class="pool-title">音圓金牌機型 (亂序)</div>
-        <div class="item-pool" id="item-pool"></div>
+    <h1><span id="name-label">女王</span> 的能量同步</h1>
+    <div class="instruction-box">
+        <p>第一階段歌詞認證已通過...</p>
+        <p style="color: var(--gold); font-weight: bold;">請交付【第二顆能量代幣】</p>
+        <p>並「長按」下方能量球進行同步，<br>解鎖最終挑戰！</p>
     </div>
+    <div class="energy-orb" id="sync-orb">按住同步</div>
+    <a href="Yuki3.html" class="btn-next" id="next-btn">解鎖最終挑戰</a>
+    <div class="footer">HAPPY MOTHER'S DAY 2026</div>
 
-    <div class="timeline-container">
-        <div class="timeline-title">演進史順序 (由舊到新)</div>
-        <div class="timeline" id="timeline"></div>
-    </div>
-</div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const user = params.get('name') || 'jayyan';
+        document.getElementById('name-label').innerText = (user === 'jayyan') ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : '女王');
 
-<div class="success-message" id="success-box">
-    <h2 style="color:var(--gold); margin:0 0 10px 0;">🎉 MISSION ACCOMPLISHED 🎉</h2>
-    <p style="margin: 0 0 15px 0;">董娘女神名不虛傳！7 神機演進史完全難不倒您！<br><br>最強助手的最後一項「終極驚喜功能」已準備就緒。<br>請遞交您手中<span>【最後一顆軟糖能量】</span>，以啟動終極破關獎勵！</p>
-    <button class="btn-next" onclick="goToYuki3()">前往終極挑戰 ➔</button>
-</div>
+        const orb = document.getElementById('sync-orb');
+        const btn = document.getElementById('next-btn');
+        let syncTimer;
 
-<div class="footer">音圓國際 最強助手 秋天 敬上</div>
-
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const user = params.get('name') || '董娘';
-
-    // *** 移除數字後的機型清單 ***
-    const machines = [
-        { id: "1", name: "(S-2001 原型)", img: "S2001.jpg", correctRank: 1 },
-        { id: "2", name: "銀河 SR-160 (2007)", img: "SR160.jpg", correctRank: 2 },
-        { id: "3", name: "頂級 XR-480 (2010)", img: "XR480.jpg", correctRank: 3 },
-        { id: "4", name: "NS-100 (2015)", img: "NS100.jpg", correctRank: 4 },
-        { id: "5", name: "N2-550 (2019)", img: "N2-550.jpg", correctRank: 5 },
-        { id: "6", name: "STAR-55 (2022)", img: "Star55.png", correctRank: 6 },
-        { id: "7", name: "PARTY-7000 (2024)", img: "Party7000.png", correctRank: 7 },
-    ];
-
-    const feedingSection = document.getElementById('feeding-prompt-section');
-    const gameArea = document.getElementById('game-area');
-    const itemPool = document.getElementById('item-pool');
-    const timeline = document.getElementById('timeline');
-    const successBox = document.getElementById('success-box');
-
-    let draggedItem = null;
-    let touchDraggedItem = null;
-    let matchedCount = 0;
-
-    function startLevel2Flow() {
-        feedingSection.style.display = "none";
-        gameArea.style.display = "flex";
-        gameArea.scrollIntoView({ behavior: 'smooth' });
-        initGame7();
-    }
-
-    function initGame7() {
-        matchedCount = 0;
-        successBox.style.display = 'none';
-        itemPool.innerHTML = '';
-        timeline.innerHTML = '';
-
-        for (let i = 1; i <= machines.length; i++) {
-            const slot = document.createElement('div');
-            slot.classList.add('timeline-slot');
-            slot.dataset.label = i;
-            slot.dataset.rank = i;
-            if (i === 1) slot.dataset.hint = "最舊";
-            if (i === machines.length) slot.dataset.hint = "最新";
-            slot.addEventListener('dragover', e => e.preventDefault());
-            slot.addEventListener('dragenter', function(e) { e.preventDefault(); if (!this.classList.contains('matched')) this.classList.add('over'); });
-            slot.addEventListener('dragleave', function() { this.classList.remove('over'); });
-            slot.addEventListener('drop', function(e) { e.preventDefault(); this.classList.remove('over'); if (!this.classList.contains('matched')) processPlacement(this, draggedItem); });
-            slot.addEventListener('click', touchPlaceItem);
-            timeline.appendChild(slot);
+        function startSync(e) {
+            e.preventDefault();
+            orb.innerText = "同步中...";
+            orb.style.animation = "pulse 0.4s infinite";
+            syncTimer = setTimeout(() => {
+                orb.innerText = "同步完成";
+                orb.style.background = "radial-gradient(circle, #00ff00, #008800)";
+                orb.style.animation = "none";
+                btn.style.display = "inline-block";
+                btn.href = "Yuki3.html?name=" + user;
+            }, 3000);
         }
+        function stopSync() { if (orb.innerText !== "同步完成") { clearTimeout(syncTimer); orb.innerText = "按住同步"; orb.style.animation = "pulse 2s infinite"; } }
 
-        const shuffled = [...machines].sort(() => 0.5 - Math.random());
-        shuffled.forEach(machine => {
-            const item = document.createElement('div');
-            item.classList.add('draggable-item');
-            item.setAttribute('draggable', 'true');
-            item.dataset.correctRank = machine.correctRank;
-            item.innerHTML = `<img src="${machine.img}" alt="${machine.name}"><div class="model-name">${machine.name}</div>`;
-            item.addEventListener('dragstart', function() { draggedItem = this; setTimeout(() => this.classList.add('dragging'), 0); });
-            item.addEventListener('dragend', function() { this.classList.remove('dragging'); });
-            item.addEventListener('click', touchSelectItem);
-            itemPool.appendChild(item);
-        });
-    }
-
-    function touchSelectItem() {
-        if (this.classList.contains('dragging')) {
-            this.classList.remove('dragging');
-            touchDraggedItem = null;
-        } else {
-            document.querySelectorAll('.draggable-item').forEach(item => item.classList.remove('dragging'));
-            this.classList.add('dragging');
-            touchDraggedItem = this;
-        }
-    }
-
-    function touchPlaceItem() {
-        if (!touchDraggedItem || this.classList.contains('matched')) return;
-        processPlacement(this, touchDraggedItem);
-        touchDraggedItem.classList.remove('dragging');
-        touchDraggedItem = null;
-    }
-
-    function processPlacement(slot, item) {
-        if (item.dataset.correctRank == slot.dataset.rank) {
-            matchedCount++;
-            item.remove();
-            slot.appendChild(item);
-            slot.classList.add('matched');
-            slot.classList.remove('wrong');
-            if (matchedCount === machines.length) {
-                setTimeout(() => { successBox.style.display = 'block'; successBox.scrollIntoView({ behavior: 'smooth' }); }, 400);
-            }
-        } else {
-            slot.classList.add('wrong');
-            setTimeout(() => { alert("哎呀！女神差一點點，再想一下這台機器的年代順序！"); slot.classList.remove('wrong'); }, 800);
-        }
-    }
-
-    function goToYuki3() { window.location.href = `Yuki3.html?name=${user}`; }
-</script>
-
+        orb.addEventListener('mousedown', startSync);
+        orb.addEventListener('touchstart', startSync);
+        orb.addEventListener('mouseup', stopSync);
+        orb.addEventListener('touchend', stopSync);
+    </script>
 </body>
 </html>
