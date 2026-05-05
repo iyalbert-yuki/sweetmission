@@ -3,128 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最終關卡：機型記憶考驗</title>
+    <title>最終關卡：音圓連線大 PK</title>
     <style>
         :root {
             --inyuan-purple: #6a0dad;
             --led-glow: #a855f7;
             --gold: #ffd700;
             --dark: #121212;
-            --card-bg: #2a2a2a;
+            --pk-red: #ff3333;
+            --pk-blue: #33aaff;
         }
 
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; overflow: hidden; }
 
-        .header { text-align: center; margin-bottom: 25px; }
-        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
-        h1 { color: var(--gold); font-size: 1.6rem; margin: 5px 0; }
-        .sub-text { color: #aaa; font-size: 0.95rem; }
+        .header { text-align: center; margin-bottom: 15px; width: 100%; max-width: 400px; }
+        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; border: 1px solid var(--led-glow); }
+        h1 { color: #fff; font-size: 1.5rem; margin: 5px 0; }
+        h1 span { color: var(--gold); }
 
-        /* 遊戲面板 */
-        .game-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 420px; perspective: 1000px; }
-
-        .card { aspect-ratio: 1 / 1; background-color: transparent; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease-out; }
-        .card.flipped { transform: rotateY(180deg); }
-        .card.matched { transform: rotateY(180deg); opacity: 0.6; pointer-events: none; border-radius: 10px; box-shadow: 0 0 15px var(--gold); }
-
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; justify-content: center; align-items: center; border: 2px solid var(--inyuan-purple); overflow: hidden; background-color: var(--card-bg); }
-        .card-back { background: linear-gradient(135deg, var(--inyuan-purple) 0%, #3a0066 100%); color: var(--gold); font-size: 2rem; font-weight: bold; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .card-front { transform: rotateY(180deg); background-color: #fff; padding: 5px; box-sizing: border-box; }
-        .card-front img { width: 100%; height: 100%; object-fit: contain; }
-
-        /* 恭喜訊息 */
-        .win-message { display: none; margin-top: 30px; text-align: center; background: rgba(106, 13, 173, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--gold); animation: popIn 0.5s ease; }
+        /* PK 狀態區 */
+        .pk-status-bar { display: flex; width: 100%; max-width: 400px; background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .pk-player { flex: 1; padding: 10px; text-align: center; border-right: 1px solid #333; }
+        .pk-player:last-child { border-right: none; }
+        .player-name { font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; }
         
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        /* 助手秋天的進度條 (電腦模擬) */
+        .ai-progress-container { width: 100%; height: 8px; background: #2a2a2a; border-radius: 4px; overflow: hidden; }
+        .ai-progress-bar { width: 0%; height: 100%; background: var(--pk-red); transition: width 0.1s linear; }
 
-        .btn-restart { margin-top: 15px; padding: 12px 25px; background: linear-gradient(to right, var(--inyuan-purple), var(--led-glow)); color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .btn-restart:hover { filter: brightness(1.2); }
+        /* 董娘的狀態 */
+        .vip-status { color: var(--pk-blue); font-size: 0.9rem; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* 遊戲面板區 */
+        .game-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 320px; aspect-ratio: 1 / 1; margin: 0 auto; }
+
+        /* 線段卡片 */
+        .pipe-tile { aspect-ratio: 1 / 1; background-color: #2a2a2a; border-radius: 10px; border: 2px solid #444; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: transform 0.2s ease, border-color 0.2s; position: relative; }
+        .pipe-tile:hover { border-color: var(--led-glow); }
         
-        .footer { margin-top: auto; padding-top: 30px; font-size: 0.75rem; color: #555; }
+        /* 線段 SVG 風格 */
+        .pipe-svg { width: 80%; height: 80%; }
+        .pipe-path { fill: none; stroke: #888; stroke-width: 8; stroke-linecap: round; }
+        
+        /* 連線成功後的燈光效果 */
+        .matched .pipe-path { stroke: var(--pk-blue); filter: drop-shadow(0 0 5px var(--led-glow)); }
+        .matched { border-color: var(--pk-blue); background-color: rgba(51, 170, 255, 0.1); }
+
+        /* 起點與終點標示 */
+        .node { width: 100%; height: 100%; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .start-node { background-color: #333; border: 2px solid #ffd700; color: #ffd700; }
+        .end-node { background-color: #333; border: 2px solid #ffd700; color: #ffd700; }
+
+        /* 遊戲開始前的語音按鈕 */
+        .btn-start-pk { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 15px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4); margin-bottom: 20px; }
+
+        /* 結算畫面 (預設隱藏) */
+        .result-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); flex-direction: column; justify-content: center; align-items: center; z-index: 100; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .result-title { font-size: 2.5rem; font-weight: bold; margin-bottom: 15px; }
+        .result-msg { font-size: 1.2rem; color: #aaa; margin-bottom: 20px; text-align: center; line-height: 1.6; }
+        .win { color: var(--pk-blue); text-shadow: 0 0 10px var(--led-glow); }
+        .lose { color: var(--pk-red); }
+        .btn-restart { padding: 10px 20px; background: var(--inyuan-purple); color: white; border: none; border-radius: 50px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="level-badge">FINAL LEVEL</div>
-    <h1><span id="display-name">女王</span> 的記憶考驗</h1>
-    <div class="sub-text">請翻出兩張相同的音圓機型進行配對！</div>
+    <h1>終極維護 PK 戰</h1>
 </div>
 
-<div class="game-board" id="game-board"></div>
-
-<div class="win-message" id="win-message">
-    <h2 style="color:var(--gold); margin:0 0 10px 0;">🎉 挑戰大成功！🎉</h2>
-    <p style="margin: 0 0 15px 0;">恭喜您憑藉神記憶完成配對！<br>請向最強助手秋天領取破關獎勵。</p>
-    <button class="btn-restart" onclick="initGame()">再玩一次</button>
+<!-- PK 狀態區 -->
+<div class="pk-status-bar" id="status-bar" style="display:none;">
+    <div class="pk-player" style="border-color: var(--pk-red);">
+        <div class="player-name" style="color: var(--pk-red);">競爭對手：秋天</div>
+        <div class="ai-progress-container">
+            <div class="ai-progress-bar" id="ai-bar"></div>
+        </div>
+    </div>
+    <div class="pk-player" style="border-color: var(--pk-blue);">
+        <div class="player-name"><span id="display-name">董娘</span> (女王)</div>
+        <div class="vip-status">網路連線中...</div>
+    </div>
 </div>
 
-<div class="footer">音圓國際 代理商維護專員 秋天 敬上</div>
+<!-- 開始按鈕與語音 -->
+<button class="btn-start-pk" id="start-btn" onclick="startPKGame()">🔥 聽取指令，開始 PK！</button>
+<audio id="pk-audio" src="level3_pk.mp3"></audio>
+
+<!-- 遊戲面板 (預設隱藏) -->
+<div class="game-board" id="game-board" style="display:none;">
+    <!-- 3x3 簡單連線謎題 -->
+    <!-- (0,0) 起點-主機 -->
+    <div class="pipe-tile start-node node">🎤</div>
+    <!-- (0,1) L型 -->
+    <div class="pipe-tile" data-type="L" data-rot="0" onclick="rotateTile(this)">
+        <svg class="pipe-svg" viewBox="0 0 100 100"><path class="pipe-path" d="M 50 100 L 50 50 L 100 50"></path></svg>
+    </div>
+    <!-- (0,2) 一字型 -->
+    <div class="pipe-tile" data-type="I" data-rot="1" onclick="rotateTile(this)">
+        <svg class="pipe-svg" viewBox="0 0 100 100"><path class="pipe-path" d="M 0 50 L 100 50"></path></svg>
+    </div>
+    
+    <!-- (1,0) L型 -->
+    <div class="pipe-tile" data-type="L" data-rot="2" onclick="rotateTile(this)">
+        <svg class="pipe-svg" viewBox="0 0 100 100"><path class="pipe-path" d="M 50 100 L 50 50 L 100 50"></path></svg>
+    </div>
+    <!-- (1,1) 起點-終點裝飾 -->
+    <div class="pipe-tile node start-node" style="border-color: #333;">🎵</div>
+    <!-- (1,2) L型 -->
+    <div class="pipe-tile" data-type="L" data-rot="3" onclick="rotateTile(this)">
+        <svg class="pipe-svg" viewBox="0 0 100 100"><path class="pipe-path" d="M 50 100 L 50 50 L 100 50"></path></svg>
+    </div>
+    
+    <!-- (2,0) 一字型 -->
+    <div class="pipe-tile" data-type="I" data-rot="0" onclick="rotateTile(this)">
+        <svg class="pipe-svg" viewBox="0 0 100 100"><path class="pipe-path" d="M 0 50 L 100 50"></path></svg>
+    </div>
+    <!-- (2,1) L型 -->
+    <div class="pipe-tile" data-type="L" data-rot="1" onclick="rotateTile(this)">
+        <svg class="pipe-svg" viewBox="0 0 100 100"><path class="pipe-path" d="M 50 100 L 50 50 L 100 50"></path></svg>
+    </div>
+    <!-- (2,2) 終點-董娘麥克風 -->
+    <div class="pipe-tile start-node node">👩</div>
+</div>
+
+<!-- 結算畫面 -->
+<div class="result-overlay" id="result-screen">
+    <div class="result-title win" id="result-title">YOU WIN!</div>
+    <div class="result-msg" id="result-msg">恭喜董娘！連線成功！</div>
+    <div style="font-size:0.8rem; color: #666; margin-bottom:10px;">音圓國際 專業維護 秋天</div>
+    <button class="btn-restart" onclick="location.reload()">再玩一次</button>
+</div>
 
 <script>
-    // 顯示名稱設定
+    // 顯示名稱處理
     const params = new URLSearchParams(window.location.search);
     const user = params.get('name') || '董娘';
     document.getElementById('display-name').innerText = user.replace('_', ' ');
 
-    // 遊戲圖片設定 (確認檔名與 GitHub 上傳的一致)
-    const images = [
-        "N2-138.jpg", "N2-150.jpg", "N2-550.jpg", "N2-800.jpg",
-        "P268.jpg", "Party7000.png", "Star15.jpg", "Star55.png"
-    ];
+    let aiProgress = 0;
+    let pkTimer;
+    let isGameActive = false;
 
-    let cards = [], firstCard = null, secondCard = null, lockBoard = false, matchedPairs = 0;
-
-    function initGame() {
-        const gameBoard = document.getElementById('game-board');
-        gameBoard.innerHTML = '';
-        document.getElementById('win-message').style.display = 'none';
-        matchedPairs = 0; firstCard = null; secondCard = null; lockBoard = false;
-
-        cards = [...images, ...images].sort(() => 0.5 - Math.random());
-
-        cards.forEach(imgSrc => {
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.dataset.img = imgSrc;
-            card.innerHTML = `
-                <div class="card-face card-back">?</div>
-                <div class="card-face card-front"><img src="${imgSrc}" alt="音圓機型"></div>
-            `;
-            card.addEventListener('click', flipCard);
-            gameBoard.appendChild(card);
-        });
+    // 播放語音並開始遊戲
+    function startPKGame() {
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('status-bar').style.display = 'flex';
+        document.getElementById('game-board').style.display = 'grid';
+        document.getElementById('pk-audio').play();
+        
+        // 延遲幾秒讓語音交代完規則，再正式開始 PK
+        setTimeout(() => {
+            isGameActive = true;
+            startAIPressure();
+        }, 8000); // 8秒後電腦開始增長 (配合語音長度)
     }
 
-    function flipCard() {
-        if (lockBoard || this === firstCard) return;
-        this.classList.add('flipped');
-        if (!firstCard) return firstCard = this;
-        secondCard = this;
-        checkForMatch();
+    // 旋轉卡片邏輯
+    function rotateTile(tile) {
+        if (!isGameActive) return;
+        
+        // 旋轉 90 度
+        let rot = parseInt(tile.dataset.rot) || 0;
+        rot = (rot + 1) % 4;
+        tile.dataset.rot = rot;
+        tile.style.transform = `rotate(${rot * 90}deg)`;
+        
+        checkWinCondition();
     }
 
-    function checkForMatch() {
-        if (firstCard.dataset.img === secondCard.dataset.img) {
-            firstCard.classList.add('matched');
-            secondCard.classList.add('matched');
-            matchedPairs++;
-            if (matchedPairs === images.length) setTimeout(() => document.getElementById('win-message').style.display = 'block', 500);
-            resetBoard();
-        } else {
-            lockBoard = true;
-            setTimeout(() => {
-                firstCard.classList.remove('flipped');
-                secondCard.classList.remove('flipped');
-                resetBoard();
-            }, 800); // 縮短翻回去的時間，讓遊戲節奏變快
+    // 模擬電腦(秋天)的維護壓力 (調整這裡控制難度)
+    function startAIPressure() {
+        pkTimer = setInterval(() => {
+            if (!isGameActive) {
+                clearInterval(pkTimer);
+                return;
+            }
+            
+            // 電腦進度每次增加一點，這裡設定為 20 秒完成
+            aiProgress += 0.5;
+            document.getElementById('ai-bar').style.width = aiProgress + '%';
+            
+            if (aiProgress >= 100) {
+                clearInterval(pkTimer);
+                showResult('lose');
+            }
+        }, 100); // 這裡調整速度
+    }
+
+    // 簡單的連線判定：這是一個特定設計的谜題，判定簡單化
+    function checkWinCondition() {
+        const tiles = document.querySelectorAll('.pipe-tile[data-type]');
+        let solved = true;
+        
+        // 謎題設計成：
+        // (0,1) L需為0deg (└)
+        // (1,2) L需為0deg (└)
+        // (2,1) L需為2deg (┐)
+        const solutions = {
+            'L': [0, 0, 2], // 依序三個L型的正確角度
+            'I': [1, 0]     // 依序兩個I型的正確角度
+        };
+
+        const currentL = Array.from(document.querySelectorAll('.pipe-tile[data-type="L"]')).map(t => parseInt(t.dataset.rot));
+        const currentI = Array.from(document.querySelectorAll('.pipe-tile[data-type="I"]')).map(t => parseInt(t.dataset.rot));
+        
+        // 如果你需要一個真正可用的連線算法，代碼會變很長。這裡使用擬真謎題。
+        // 設定董娘點擊特定卡片次數後，線段變藍，假裝連線。
+        
+        // **擬真判定：只要重要轉角對了就過關** (請根據現場實際調整)
+        // 設計一個簡單的過關條件：特定的兩個L型(如右上和左下)對了
+        if(currentL[0] === 0 && currentL[1] === 3 && currentL[2] === 2 && currentI[0] === 0) {
+             tiles.forEach(t => t.classList.add('matched'));
+             setTimeout(() => showResult('win'), 500);
         }
     }
 
-    function resetBoard() { [firstCard, secondCard, lockBoard] = [null, null, false]; }
+    // 顯示結果
+    function showResult(result) {
+        isGameActive = false;
+        clearInterval(pkTimer);
+        document.getElementById('pk-audio').pause();
+        
+        const screen = document.getElementById('result-screen');
+        const title = document.getElementById('result-title');
+        const msg = document.getElementById('result-msg');
+        
+        screen.style.display = 'flex';
+        
+        if (result === 'win') {
+            title.innerText = "🏆 YOU WIN! 🏆";
+            title.classList.remove('lose');
+            msg.innerHTML = "董娘技術超凡！連線速度全台第一！<br>秋天副官甘拜下風，您的維護費依舊最優惠！";
+        } else {
+            title.innerText = "GAME OVER";
+            title.classList.add('lose');
+            title.classList.remove('win');
+            msg.innerHTML = "哎呀！秋天搶先連線成功了。<br>最強助手可不是蓋的喔！<br>(按「再玩一次」向秋天發起挑戰)";
+        }
+    }
 
-    // 載入時自動啟動遊戲
-    initGame();
+    // 初始化一些線段角度，讓它們看起來是亂的
+    document.querySelectorAll('.pipe-tile[data-rot]').forEach(t => {
+        let rot = t.dataset.rot;
+        t.style.transform = `rotate(${rot * 90}deg)`;
+    });
 </script>
 
 </body>
