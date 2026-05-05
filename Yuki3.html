@@ -3,66 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第三關：終極 PK</title>
+    <title>甜蜜任務：第三關</title>
     <style>
-        :root { --purp: #6a0dad; --gold: #ffd700; --bg: #0f0f0f; --win: #33aaff; --lose: #ff3333; }
-        body { background: var(--bg); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-        .frame { width: 100%; max-width: 400px; border: 2px solid var(--purp); border-radius: 30px; padding: 25px; background: #000; text-align: center; }
-        .hp-box { width: 100%; height: 20px; background: #333; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .hp-bar { width: 20%; height: 100%; background: red; transition: 0.5s; }
-        .timer { font-size: 2rem; color: var(--lose); font-weight: bold; margin-bottom: 10px; }
-        .g-b { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .tile { aspect-ratio: 1; background: #222; border: 1px solid #444; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-        .t-p { fill: none; stroke: #888; stroke-width: 8; stroke-linecap: round; }
-        .matched .t-p { stroke: var(--win); }
-        .matched { border-color: var(--win); }
-        .btn-pk { background: var(--lose); color: #fff; padding: 15px 30px; border-radius: 50px; font-weight: bold; border: none; cursor: pointer; }
+        :root {
+            --inyuan-purple: #6a0dad;
+            --led-glow: #a855f7;
+            --gold: #ffd700;
+            --dark: #121212;
+            --card-bg: #2a2a2a;
+        }
+
+        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+
+        .header { text-align: center; margin-bottom: 25px; }
+        .level-badge { display: inline-block; background: var(--inyuan-purple); color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; border: 1px solid var(--led-glow); }
+        h1 { color: var(--gold); font-size: 1.6rem; margin: 5px 0; }
+        .sub-text { color: #aaa; font-size: 0.95rem; }
+
+        /* 遊戲面板 */
+        .game-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 420px; perspective: 1000px; }
+
+        .card { aspect-ratio: 1 / 1; background-color: transparent; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease-out; }
+        .card.flipped { transform: rotateY(180deg); }
+        .card.matched { transform: rotateY(180deg); opacity: 0.6; pointer-events: none; border-radius: 10px; box-shadow: 0 0 15px var(--gold); }
+
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; justify-content: center; align-items: center; border: 2px solid var(--inyuan-purple); overflow: hidden; background-color: var(--card-bg); }
+        .card-back { background: linear-gradient(135deg, var(--inyuan-purple) 0%, #3a0066 100%); color: var(--gold); font-size: 2rem; font-weight: bold; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .card-front { transform: rotateY(180deg); background-color: #fff; padding: 5px; box-sizing: border-box; }
+        .card-front img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* 恭喜訊息 */
+        .win-message { display: none; margin-top: 30px; text-align: center; background: rgba(106, 13, 173, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--gold); animation: popIn 0.5s ease; }
+        
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .btn-restart { margin-top: 15px; padding: 12px 25px; background: linear-gradient(to right, var(--inyuan-purple), var(--led-glow)); color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        .footer { margin-top: auto; padding-top: 30px; font-size: 0.75rem; color: #555; }
     </style>
 </head>
 <body>
-<div class="frame">
-    <h1>最終挑戰</h1>
-    <div id="intro">
-        <p style="color:red;">🤕 秋天體力剩餘 20% (左手斷裂/眼鏡碎裂)</p>
-        <div class="hp-box"><div class="hp-bar" id="hp"></div></div>
-        <p>上一關秋天傷重，需要董娘餵食【第三顆終極能量軟糖】才能恢復體力復活！</p>
-        <button class="btn-pk" onclick="heal()">🍬 餵食軟糖，恢復體力</button>
-    </div>
-    <div id="pk" style="display:none;">
-        <div class="timer" id="t">60s</div>
-        <p style="color:var(--gold);">秋天能量 100%！一分鐘 PK 連線開始！</p>
-        <div class="g-b" id="board" style="display:grid;">
-            <div class="tile" style="color:gold">🎤</div>
-            <div class="tile" data-r="0" onclick="rot(this)"><svg width="40" height="40" viewBox="0 0 100 100"><path class="t-p" d="M 50 100 L 50 50 L 100 50"></path></svg></div>
-            <div class="tile" data-r="1" onclick="rot(this)"><svg width="40" height="40" viewBox="0 0 100 100"><path class="t-p" d="M 0 50 L 100 50"></path></svg></div>
-            <div class="tile" data-r="2" onclick="rot(this)"><svg width="40" height="40" viewBox="0 0 100 100"><path class="t-p" d="M 50 100 L 50 50 L 100 50"></path></svg></div>
-            <div class="tile" style="color:gold">🎵</div>
-            <div class="tile" data-r="3" onclick="rot(this)"><svg width="40" height="40" viewBox="0 0 100 100"><path class="t-p" d="M 50 100 L 50 50 L 100 50"></path></svg></div>
-            <div class="tile" data-r="0" onclick="rot(this)"><svg width="40" height="40" viewBox="0 0 100 100"><path class="t-p" d="M 0 50 L 100 50"></path></svg></div>
-            <div class="tile" data-r="1" onclick="rot(this)"><svg width="40" height="40" viewBox="0 0 100 100"><path class="t-p" d="M 50 100 L 50 50 L 100 50"></path></svg></div>
-            <div class="tile" style="color:gold">👩</div>
-        </div>
-    </div>
+
+<div class="header">
+    <div class="level-badge">FINAL LEVEL</div>
+    <h1><span id="display-name">女王</span> 的音圓神機記憶</h1>
+    <div class="sub-text">最終挑戰！請翻出兩張相同的音圓機型進行配對。</div>
 </div>
+
+<div class="game-board" id="game-board"></div>
+
+<div class="win-message" id="win-message">
+    <h2 style="color:var(--gold); margin:0 0 10px 0;">🎉 MISSION ACCOMPLISHED 🎉</h2>
+    <p style="margin: 0 0 15px 0;">太厲害了！最終挑戰達成大成功！<br><br>輔助單位秋天的終極功能已完全解鎖。<br>請遞交您手中的<span>最後一顆軟糖能量</span>，<br>領取為您精心準備的終極破關獎勵！</p>
+    <button class="btn-restart" onclick="initGame()">再玩一次挑战</button>
+</div>
+
+<div class="footer">HAPPY MOTHER'S DAY 2026</div>
+
 <script>
-    let active = false, time = 60;
-    function heal() {
-        alert("🍬 注入能量！秋天體力恢復 100%！左手與眼鏡已修復！");
-        document.getElementById('hp').style.width = '100%';
-        document.getElementById('hp').style.background = 'green';
-        setTimeout(() => {
-            alert("秋天復活！一分鐘 PK 戰開始，看誰快！");
-            document.getElementById('intro').style.display='none';
-            document.getElementById('pk').style.display='block';
-            active = true;
-            setInterval(() => { if(active && time > 0) { time--; document.getElementById('t').innerText=time+'s'; if(time===0) alert('時間到！'); } }, 1000);
-        }, 1000);
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('name') || 'jayyan';
+    const displayName = user === 'jayyan' ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
+    document.getElementById('display-name').innerText = displayName;
+
+    const images = [
+        "N2-138.jpg", "N2-150.jpg", "N2-550.jpg", "N2-800.jpg",
+        "P268.jpg", "Party7000.png", "Star15.jpg", "Star55.png"
+    ];
+
+    let cards = [], firstCard = null, secondCard = null, lockBoard = false, matchedPairs = 0;
+
+    function initGame() {
+        const gameBoard = document.getElementById('game-board');
+        gameBoard.innerHTML = '';
+        document.getElementById('win-message').style.display = 'none';
+        matchedPairs = 0; firstCard = null; secondCard = null; lockBoard = false;
+
+        cards = [...images, ...images].sort(() => 0.5 - Math.random());
+
+        cards.forEach(imgSrc => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.img = imgSrc;
+            card.innerHTML = `
+                <div class="card-face card-back">?</div>
+                <div class="card-face card-front"><img src="${imgSrc}" alt="音圓機型"></div>
+            `;
+            card.addEventListener('click', flipCard);
+            gameBoard.appendChild(card);
+        });
     }
-    function rot(t) { if(!active) return; let r = (parseInt(t.dataset.r)+1)%4; t.dataset.r=r; t.style.transform=`rotate(${r*90}deg)`; check(); }
-    function check() { 
-        const rs = Array.from(document.querySelectorAll('.tile[data-r]')).map(t=>parseInt(t.dataset.r));
-        if(rs[0]===0 && rs[2]===2 && rs[4]===1) { active=false; alert("🏆 女王贏了！連線成功！母親節快樂！"); }
+
+    function flipCard() {
+        if (lockBoard || this === firstCard) return;
+        this.classList.add('flipped');
+        if (!firstCard) return firstCard = this;
+        secondCard = this;
+        checkForMatch();
     }
+
+    function checkForMatch() {
+        if (firstCard.dataset.img === secondCard.dataset.img) {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            matchedPairs++;
+            if (matchedPairs === images.length) setTimeout(() => document.getElementById('win-message').style.display = 'block', 500);
+            resetBoard();
+        } else {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 800);
+        }
+    }
+
+    function resetBoard() { [firstCard, secondCard, lockBoard] = [null, null, false]; }
+
+    initGame();
 </script>
+
 </body>
 </html>
