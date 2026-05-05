@@ -1,14 +1,71 @@
-<!-- 部份程式碼省略，重點在於勝出後的顯示 -->
-<div class="win-box" id="win">
-    <div style="margin-bottom:10px;">
-        <span style="color:var(--gold);">秋天狀態：極度疲勞</span>
-        <div style="width:100%; background:#333; height:10px; border-radius:5px; margin-top:5px;">
-            <div style="width:20%; background:#ff4d4d; height:100%; border-radius:5px; box-shadow: 0 0 10px red;"></div>
-        </div>
-        <small>剩餘體力：20%</small>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第二關：時光機</title>
+    <style>
+        :root { --purp: #6a0dad; --gold: #ffd700; --bg: #121212; --red: #ff3333; }
+        body { background: var(--bg); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        .frame { width: 100%; max-width: 420px; border: 1px solid var(--purp); border-radius: 25px; padding: 25px; background: #000; text-align: center; }
+        .injury-info { display: none; background: rgba(255,0,0,0.2); border: 1px solid red; padding: 10px; border-radius: 10px; margin-bottom: 15px; color: #ff9999; font-size: 0.8rem; }
+        .game-zone { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .card, .slot { aspect-ratio: 3/1; background: #222; border: 1px solid var(--purp); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: grab; }
+        .slot { border-style: dashed; border-color: #555; cursor: default; }
+        .matched { border-color: #00ff00 !important; background: rgba(0,255,0,0.1) !important; }
+        .btn-next { display: none; background: var(--gold); color: #000; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="frame">
+    <div class="injury-info" id="inj">🤕 警告：秋天受傷了！<br><span id="inj-msg"></span></div>
+    <h1>第二關：機型時光機</h1>
+    <p style="font-size: 0.8rem; color: #aaa;">依序將機型拖入正確年份 (最早到現在)</p>
+    <div class="game-zone" id="c-zone">
+        <!-- 簡化版卡片 -->
+        <div class="card" draggable="true" id="c4" data-o="4">XR-480</div>
+        <div class="card" draggable="true" id="c1" data-o="1">S-2001原型</div>
+        <div class="card" draggable="true" id="c8" data-o="8">PARTY-7000</div>
+        <div class="card" draggable="true" id="c2" data-o="2">CD-80P</div>
+        <div class="card" draggable="true" id="c5" data-o="5">NS-100</div>
+        <div class="card" draggable="true" id="c7" data-o="7">STAR-55</div>
+        <div class="card" draggable="true" id="c3" data-o="3">SR-160</div>
+        <div class="card" draggable="true" id="c6" data-o="6">N2-550</div>
     </div>
-    🎉 <span>恭喜女王破關！</span><br>
-    雖然排序完成了，但秋天為了維護系統體力消耗殆盡...<br>
-    請帶著剩餘 20% 體力的秋天進入最終關卡。
-    <a href="#" id="l-next" class="btn-next">前往第三關</a>
+    <div class="game-zone">
+        <div class="slot" data-s="1">1</div><div class="slot" data-s="2">2</div><div class="slot" data-s="3">3</div><div class="slot" data-s="4">4</div>
+        <div class="slot" data-s="5">5</div><div class="slot" data-s="6">6</div><div class="slot" data-s="7">7</div><div class="slot" data-s="8">8</div>
+    </div>
+    <a href="#" class="btn-next" id="ln">前往第三關</a>
 </div>
+<script>
+    const ps = new URLSearchParams(window.location.search);
+    const u = ps.get('name') || 'JAY_YAN';
+    let cnt = 0, err = 0;
+    const cards = document.querySelectorAll('.card');
+    const slots = document.querySelectorAll('.slot');
+
+    cards.forEach(c => { c.ondragstart = (e) => e.dataTransfer.setData('id', c.id); });
+    slots.forEach(s => { 
+        s.ondragover = e => e.preventDefault();
+        s.ondrop = (e) => {
+            const cid = e.dataTransfer.getData('id');
+            const c = document.getElementById(cid);
+            if(c.dataset.o === s.dataset.s) {
+                s.appendChild(c); s.classList.add('matched'); cnt++;
+                if(cnt===8) {
+                    alert("雖然受傷了...但過關了！\n體力消耗 20%。需餵食最後軟糖。");
+                    document.getElementById('ln').href = `Yuki3.html?name=${u}`;
+                    document.getElementById('ln').style.display='inline-block';
+                }
+            } else {
+                err++;
+                document.getElementById('inj').style.display='block';
+                document.getElementById('inj-msg').innerText = (err===1) ? "左手斷了一隻！" : "左手斷裂 + 眼鏡破裂！";
+                alert("順序錯了！秋天受到重創！");
+            }
+        };
+    });
+</script>
+</body>
+</html>
