@@ -1,58 +1,20 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>女王專屬任務：能量同步</title>
-    <style>
-        :root { --primary: #6a0dad; --glow: #a855f7; --gold: #ffd700; --dark: #121212; }
-        body { background-color: var(--dark); color: #fff; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; justify-content: center; }
-        h1 { color: var(--gold); font-size: 1.6rem; text-align: center; }
-        .instruction-box { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid var(--glow); width: 100%; max-width: 350px; text-align: center; margin-bottom: 20px; }
-        .energy-orb { width: 150px; height: 150px; background: radial-gradient(circle, var(--glow) 0%, var(--primary) 70%, transparent 100%); border-radius: 50%; box-shadow: 0 0 30px var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; user-select: none; -webkit-user-select: none; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
-        .btn-next { display: none; margin-top: 25px; padding: 15px 40px; background: linear-gradient(to right, var(--primary), var(--glow)); color: white; border: none; border-radius: 50px; font-weight: bold; text-decoration: none; box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4); }
-        .footer { margin-top: 40px; font-size: 0.8rem; color: #555; }
-    </style>
-</head>
-<body>
-    <h1><span id="name-label">女王</span> 的能量同步</h1>
-    <div class="instruction-box">
-        <p>第一階段歌詞認證已通過...</p>
-        <p style="color: var(--gold); font-weight: bold;">請交付【第二顆能量代幣】</p>
-        <p>並「長按」下方能量球進行同步，<br>解鎖最終挑戰！</p>
-    </div>
-    <div class="energy-orb" id="sync-orb">按住同步</div>
-    <a href="Yuki3.html" class="btn-next" id="next-btn">解鎖最終挑戰</a>
-    <div class="footer">HAPPY MOTHER'S DAY 2026</div>
+    // --- 請找到 Yuki2.html 腳本中的 checkOrder 函式並替換成這段 ---
+    function checkOrder() {
+        const items = listElement.querySelectorAll('.sort-item');
+        let currentOrder = [];
+        items.forEach(item => currentOrder.push(item.dataset.id));
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const user = params.get('name') || 'jayyan';
-        document.getElementById('name-label').innerText = (user === 'jayyan') ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : '女王');
+        const isCorrect = currentOrder.every((val, index) => val === correctOrder[index].id);
 
-        const orb = document.getElementById('sync-orb');
-        const btn = document.getElementById('next-btn');
-        let syncTimer;
-
-        function startSync(e) {
-            e.preventDefault();
-            orb.innerText = "同步中...";
-            orb.style.animation = "pulse 0.4s infinite";
-            syncTimer = setTimeout(() => {
-                orb.innerText = "同步完成";
-                orb.style.background = "radial-gradient(circle, #00ff00, #008800)";
-                orb.style.animation = "none";
-                btn.style.display = "inline-block";
-                btn.href = "Yuki3.html?name=" + user;
-            }, 3000);
+        if (isCorrect) {
+            // 彈出成功訊息
+            alert("女王英明！時光序位完全正確。\n系統即將開啟最終挑戰！");
+            
+            // 核心修正：點完 alert 後直接自動跳轉到第三關
+            // 確保檔名對準 Yuki3.html
+            window.location.href = "Yuki3.html?name=" + user;
+            
+        } else {
+            alert("順序好像不太對喔，再回想一下這些經典款的出廠順序！");
         }
-        function stopSync() { if (orb.innerText !== "同步完成") { clearTimeout(syncTimer); orb.innerText = "按住同步"; orb.style.animation = "pulse 2s infinite"; } }
-
-        orb.addEventListener('mousedown', startSync);
-        orb.addEventListener('touchstart', startSync);
-        orb.addEventListener('mouseup', stopSync);
-        orb.addEventListener('touchend', stopSync);
-    </script>
-</body>
-</html>
+    }
