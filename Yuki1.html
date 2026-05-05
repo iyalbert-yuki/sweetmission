@@ -19,29 +19,25 @@
         h1 { color: var(--gold); font-size: 1.5rem; margin: 5px 0; }
         .sub-text { color: #aaa; font-size: 0.9rem; margin-bottom: 15px; }
 
-        /* 1. 啟動區：立刻跳出的餵食確認 */
-        #start-box { width: 100%; max-width: 400px; background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 20px; padding: 30px 20px; text-align: center; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); animation: popIn 0.5s ease; }
-        .btn-main { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-main:active { transform: scale(0.95); }
+        /* 1. 啟動區 */
+        #start-box { width: 100%; max-width: 400px; background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 20px; padding: 30px 20px; text-align: center; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        .btn-main { background: linear-gradient(45deg, #ff0000, #ff7700); border: none; color: white; padding: 18px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
 
-        /* 2. 影片區 (預設隱藏) */
-        #video-section { display: none; width: 100%; max-width: 400px; border: 2px solid var(--primary); border-radius: 15px; overflow: hidden; background: #000; margin-bottom: 20px; animation: fadeIn 1s ease; }
+        /* 2. 影片區 */
+        #video-section { display: none; width: 100%; max-width: 400px; border: 2px solid var(--primary); border-radius: 15px; overflow: hidden; background: #000; margin-bottom: 20px; }
         video { width: 100%; display: block; }
 
-        /* 3. 輸入答案區 (預設隱藏) */
-        #quiz-box { display: none; width: 100%; max-width: 400px; background: rgba(106, 13, 173, 0.2); border: 1px solid var(--glow); border-radius: 15px; padding: 25px 20px; text-align: center; animation: fadeIn 0.8s ease; }
+        /* 3. 輸入答案區 */
+        #quiz-box { display: none; width: 100%; max-width: 400px; background: rgba(106, 13, 173, 0.2); border: 1px solid var(--glow); border-radius: 15px; padding: 25px 20px; text-align: center; }
         .input-label { color: var(--gold); font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; display: block; }
         
         .answer-input { width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); background: #2a2a2a; color: #fff; font-size: 1.1rem; text-align: center; margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        .answer-input:focus { border-color: var(--gold); }
+        .answer-input:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
         
         .btn-submit { background: var(--primary); border: 1px solid var(--glow); color: white; padding: 12px; width: 100%; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
 
         /* 過關訊息 */
         #success-box { display: none; margin-top: 20px; color: var(--success); font-weight: bold; line-height: 1.6; border: 1px solid var(--success); padding: 15px; border-radius: 10px; background: rgba(0, 255, 0, 0.05); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         .footer { margin-top: auto; padding-top: 30px; font-size: 0.8rem; color: #555; }
     </style>
@@ -55,7 +51,7 @@
 
 <div id="start-box">
     <h2 style="color:var(--gold); margin-top:0;">女王，要不要餵食啊？</h2>
-    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">請交付第一顆能量代幣，啟動系統音訊指令。</p>
+    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">請交付第一顆能量代幣，啟動系統語音指令。</p>
     <button class="btn-main" onclick="initiate()">🔥 即刻補幾，啟動指令</button>
 </div>
 
@@ -84,50 +80,40 @@
 <div class="footer">HAPPY MOTHER'S DAY 2026</div>
 
 <script>
-    // 正確答案
     const correctLyric = "你不懂女生"; 
 
-    // 抓取網址參數
     const params = new URLSearchParams(window.location.search);
     const user = params.get('name') || 'jayyan';
     const label = (user === 'jayyan') ? 'Jay Yan' : (user === 'yaling' ? '雅玲' : user);
     document.getElementById('name-label').innerText = label;
 
-    // 設定音檔路徑
     const audio = document.getElementById('audio-player');
     audio.src = user + ".mp3";
 
     const video = document.getElementById('mv-video');
 
-    // 點擊「即刻補幾」啟動流程
     function initiate() {
         document.getElementById('start-box').style.display = 'none';
         document.getElementById('status-msg').innerText = "系統指令傳輸中...";
-        
-        // 播放語音音檔 (jayyan.mp3 或 yaling.mp3)
         audio.play().catch(() => showMV());
         audio.onended = showMV;
     }
 
-    // 顯示 MV 影片
     function showMV() {
         document.getElementById('status-msg').innerText = "請欣賞專屬獻禮";
         document.getElementById('video-section').style.display = 'block';
         document.getElementById('video-section').scrollIntoView({behavior: 'smooth'});
     }
 
-    // 影片播完後跳出輸入框
     video.onended = function() {
         document.getElementById('quiz-box').style.display = 'block';
         document.getElementById('quiz-box').scrollIntoView({behavior: 'smooth'});
     };
 
-    // 檢查歌詞答案
     function checkAnswer() {
         const userInput = document.getElementById('user-answer').value.trim();
         const successBox = document.getElementById('success-box');
         
-        // 移除所有空格進行比對，提高容錯率
         const cleanUser = userInput.replace(/\s+/g, '');
         const cleanCorrect = correctLyric.replace(/\s+/g, '');
 
@@ -137,9 +123,9 @@
             document.querySelector('.btn-submit').disabled = true;
             successBox.scrollIntoView({behavior: 'smooth'});
 
-            // 重點：3 秒後自動跳轉到第二關 Yuki 2.html
+            // 重點修正：3秒後自動跳轉到 Yuki2.html
             setTimeout(() => {
-                window.location.href = "Yuki%202.html?name=" + user;
+                window.location.href = "Yuki2.html?name=" + user;
             }, 3000); 
 
         } else {
